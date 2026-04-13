@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Admin - INOV Learn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #F3F4F6;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+
+
+        /* MAIN */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            background: white;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #E5E7EB;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .topbar h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #0087C2;
+            border-radius: 8px;
+            padding: 9px 14px;
+            gap: 8px;
+            width: 230px;
+        }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 13px;
+            width: 100%;
+        }
+        .search-bar input::placeholder { color: rgba(255,255,255,0.75); }
+        .search-bar i { color: white; font-size: 13px; }
+
+        .icon-btn {
+            background: #F3F4F6;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 12px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #6B7280;
+            transition: all 0.2s;
+        }
+        .icon-btn:hover { background: #E5E7EB; color: #1F2937; }
+
+        /* CONTENT */
+        .content { padding: 28px; }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-card.blue { background: #0087C2; }
+        .stat-card.blue .stat-label,
+        .stat-card.blue .stat-num { color: white !important; }
+        .stat-card.blue .stat-icon {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .stat-info { display: flex; flex-direction: column; gap: 8px; }
+        .stat-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-num {
+            font-size: 38px;
+            font-weight: 800;
+            color: #1F2937;
+            line-height: 1;
+        }
+        .stat-num.orange { color: #F97316; }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .si-orange { background: #FFF3EC; color: #F97316; }
+        .si-blue   { background: #E0F4FF; color: #0087C2; }
+        .si-red    { background: #FEE2E2; color: #EF4444; }
+
+        /* ACTIONS RAPIDES */
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 14px;
+        }
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+        .action-card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 16px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .action-card:hover {
+            border-color: #0087C2;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,135,194,0.15);
+        }
+        .action-card .a-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: #FFF3EC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            font-size: 22px;
+            color: #F97316;
+            transition: all 0.2s;
+        }
+        .action-card:hover .a-icon {
+            background: #0087C2;
+            color: white;
+        }
+        .action-card p {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+    </style>
+</head>
+<body>
+{% include 'sidebar.html' %}
+<!-- SIDEBAR -->
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <h2>Tableau de bord</h2>
+        <div class="topbar-right">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Rechercher..."/>
+            </div>
+            <button class="icon-btn">
+                <i class="fa-solid fa-bell"></i>
+            </button>
+            <button class="icon-btn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+{% if request.session.admin_id %}
+        <!-- STATS -->
+        <div class="stats">
+            <div class="stat-card blue">
+                <div class="stat-info">
+                    <span class="stat-label">Total Etudiants</span>
+                    <span class="stat-num">67</span>
+                </div>
+                <div class="stat-icon">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Enseignants</span>
+                    <span class="stat-num orange">0</span>
+                </div>
+                <div class="stat-icon si-orange">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Paiements reçus</span>
+                    <span class="stat-num orange">4</span>
+                </div>
+                <div class="stat-icon si-blue">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Impayés</span>
+                    <span class="stat-num orange">0</span>
+                </div>
+                <div class="stat-icon si-red">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIONS RAPIDES -->
+        <p class="section-title">Actions rapides</p>
+        <div class="actions">
+            <div class="action-card">
+                <div class="a-icon">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <p>Nouvel étudiant</p>
+            </div>
+            <div class="action-card">
+                <div class="a-icon">
+                    <i class="fa-solid fa-calendar-plus"></i>
+                </div>
+                <p>Planifier cours</p>
+            </div>
+            <div class="action-card">
+                <div class="a-icon">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                </div>
+                <p>Enregistrer paiement</p>
+            </div>
+            <div class="action-card">
+                <div class="a-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <p>Générer rapport</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endif %}
+</body>
+</html>

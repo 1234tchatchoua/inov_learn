@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reçu de paiement - INOV Learn</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #F3F4F6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        /* RECU */
+        .recu {
+            background: white;
+            border-radius: 16px;
+            width: 480px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+
+        /* HEADER RECU */
+        .recu-header {
+            background: #0087C2;
+            padding: 24px 20px;
+            text-align: center;
+            color: white;
+        }
+        .recu-header img { width: 70px; margin-bottom: 10px; }
+        .recu-header h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+        .recu-header p  { font-size: 12px; opacity: 0.85; }
+
+        /* NUMERO RECU */
+        .recu-num {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: #FFF8F0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .recu-num div { display: flex; flex-direction: column; gap: 3px; }
+        .recu-num label { font-size: 10px; font-weight: 700; color: #6B7280; text-transform: uppercase; }
+        .recu-num span  { font-size: 14px; font-weight: 800; color: #F97316; }
+        .recu-num .date-val { color: #1F2937; font-size: 13px; font-weight: 700; }
+
+        /* BODY */
+        .recu-body { padding: 20px; }
+
+        .recu-section { margin-bottom: 18px; }
+        .recu-section-title {
+            font-size: 11px; font-weight: 700;
+            color: #0087C2; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 10px;
+            padding-bottom: 4px;
+            border-bottom: 1.5px solid #E0F4FF;
+        }
+        .recu-line {
+            display: flex; justify-content: space-between;
+            font-size: 13px; color: #374151;
+            margin-bottom: 8px;
+        }
+        .recu-line span:last-child { font-weight: 700; color: #1F2937; }
+
+        /* DETAILS PAIEMENT */
+        .recap-box {
+            background: #F0F9FF;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 10px;
+        }
+        .recap-line {
+            display: flex; justify-content: space-between;
+            font-size: 13px; color: #374151;
+            margin-bottom: 8px;
+        }
+        .recap-line span:last-child { font-weight: 700; }
+        .recap-line.montant span { color: #0087C2; font-size: 15px; }
+        .recap-line.reste   span { color: #EF4444; font-size: 15px; }
+        .recap-line.solde   span { color: #10B981; font-size: 15px; }
+
+        /* SIGNATURES */
+        .signatures {
+            display: flex; justify-content: space-between;
+            padding: 16px 20px;
+            border-top: 1px solid #E5E7EB;
+            font-size: 12px; color: #6B7280;
+        }
+
+        /* FOOTER RECU */
+        .recu-footer {
+            background: #FFF8F0;
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #F97316;
+            font-weight: 600;
+        }
+
+        /* BOUTONS */
+        .btns {
+            display: flex; gap: 14px;
+            margin-top: 24px;
+        }
+        .btn-imprimer {
+            padding: 12px 32px;
+            background: #0087C2;
+            color: white; border: none;
+            border-radius: 10px;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-imprimer:hover { background: #006FA3; }
+        .btn-retour {
+            padding: 12px 32px;
+            background: white;
+            color: #6B7280;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-retour:hover { background: #F3F4F6; }
+
+        /* IMPRESSION */
+        @media print {
+            body { background: white; padding: 0; }
+            .btns { display: none; }
+            .recu { box-shadow: none; border-radius: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- RECU -->
+    <div class="recu">
+
+        <!-- HEADER -->
+        <div class="recu-header">
+            <img src="{% static 'images/inov learn.png' %}" alt="INOV Learn"/>
+            <h2>REÇU DE PAIEMENT</h2>
+            <p>Centre de formation INOV Learn — Douala, Cameroun</p>
+        </div>
+
+        <!-- NUMERO + DATE -->
+        <div class="recu-num">
+            <div>
+                <label>Numéro du reçu</label>
+                <span>{{ paiement.numero_recu }}</span>
+            </div>
+            <div style="text-align:right;">
+                <label>Date</label>
+                <span class="date-val">{{ paiement.date_paiement|date:"d M Y" }}</span>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="recu-body">
+
+            <!-- ETUDIANT -->
+            <div class="recu-section">
+                <div class="recu-section-title">Etudiant</div>
+                <div class="recu-line">
+                    <span>Nom complet</span>
+                    <span>{{ paiement.etudiant.nom }} {{ paiement.etudiant.prenom }}</span>
+                </div>
+                <div class="recu-line">
+                    <span>Filière</span>
+                    <span>{{ paiement.etudiant.filiere }}</span>
+                </div>
+            </div>
+
+            <!-- DETAILS PAIEMENT -->
+            <div class="recu-section">
+                <div class="recu-section-title">Détails du paiement</div>
+                <div class="recap-box">
+                    <div class="recap-line">
+                        <span>Frais total de la filière</span>
+                        <span>{{ paiement.frais_total }} F</span>
+                    </div>
+                    <div class="recap-line montant">
+                        <span>Montant versé</span>
+                        <span>{{ paiement.montant_verse }} F</span>
+                    </div>
+                    <hr style="border:none;border-top:1px solid #E5E7EB;margin:8px 0;"/>
+                    {% if paiement.reste_a_payer <= 0 %}
+                    <div class="recap-line solde">
+                        <span>Reste à payer</span>
+                        <span>Soldé </span>
+                    </div>
+                    {% else %}
+                    <div class="recap-line reste">
+                        <span>Reste à payer</span>
+                        <span>{{ paiement.reste_a_payer }} F</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SIGNATURES -->
+        <div class="signatures">
+            <span>Signature de l'admin</span>
+            <span>Cachet du centre</span>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="recu-footer">
+            Merci de conserver ce reçu — INOV Learn — Douala
+        </div>
+
+    </div>
+
+    <!-- BOUTONS -->
+    <div class="btns">
+        <button class="btn-imprimer" onclick="window.print()">
+            <i class="fa-solid fa-print"></i> Imprimer / PDF
+        </button>
+        <a href="{% url 'paiements' %}" class="btn-retour">
+             Retour aux paiements
+        </a>
+    </div>
+
+</body>
+</html>

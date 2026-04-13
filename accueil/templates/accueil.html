@@ -1,0 +1,124 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>INOV LEARN</title>
+
+<style>
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial;
+    color: white;
+
+    /* IMAGE DE FOND */
+    background-image: url("{% static 'images/bg_accueil.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    /* POSITION RELATIVE pour la couverture */
+    position: relative;
+}
+
+/* COUVERTURE BLEUE TRANSPARENTE */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 135, 194, 0.50);
+    z-index: 0;
+}
+
+/* LOGO */
+.logo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+}
+
+.logo img {
+    width: 70px;
+}
+
+/* TITRE */
+h1 {
+    font-size: 60px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* BOUTONS */
+.boutons {
+    margin-top: 50px;
+    position: relative;
+    z-index: 1;
+}
+
+button {
+    padding: 20px 40px;
+    font-size: 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* bouton etudiant */
+.etudiant {
+    background: white;
+    color: #0087C2;
+}
+
+/* bouton enseignant */
+.enseignant {
+    background: orange;
+    color: white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- LOGO -->
+<div class="logo">
+    <img src="{% static 'images/inov learn.png' %}">
+</div>
+
+<!-- TITRE -->
+<h1>BIENVENUE CHEZ INOV LEARN</h1>
+
+<!-- BOUTONS -->
+<div class="boutons">
+
+    <button class="etudiant"
+            onclick="window.location.href='{% url 'connexion_etudiant' %}'">
+        ETUDIANT
+    </button>
+
+    <button class="enseignant"
+            onclick="window.location.href='{% url 'connexion_enseignant' %}'">
+        ENSEIGNANT
+    </button>
+
+</div>
+
+</body>
+
+</html>

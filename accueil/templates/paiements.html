@@ -1,0 +1,341 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Paiements - INOV Learn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; background: #F3F4F6; display: flex; height: 100vh; overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar { width: 220px; min-width: 220px; background: #0087C2; display: flex; flex-direction: column; align-items: center; padding-top: 20px; height: 100vh; }
+        .sidebar-logo { margin-bottom: 30px; }
+        .sidebar-logo img { width: 90px; }
+        .sidebar-menu { width: 100%; list-style: none; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 12px; padding: 16px 24px; color: rgba(255,255,255,0.85); text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-menu li a:hover { background: rgba(255,255,255,0.15); color: white; }
+        .sidebar-menu li a.active { background: rgba(255,255,255,0.2); color: white; border-left: 4px solid white; }
+        .sidebar-menu li a .ico { width: 20px; text-align: center; font-size: 15px; }
+
+        /* MAIN */
+        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+        /* TOPBAR */
+        .topbar { background: white; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E5E7EB; position: sticky; top: 0; z-index: 10; }
+        .topbar h2 { font-size: 20px; font-weight: 700; color: #1F2937; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .search-bar { display: flex; align-items: center; background: #0087C2; border-radius: 8px; padding: 9px 14px; gap: 8px; width: 230px; }
+        .search-bar input { background: transparent; border: none; outline: none; color: white; font-size: 13px; width: 100%; }
+        .search-bar input::placeholder { color: rgba(255,255,255,0.75); }
+        .search-bar i { color: white; font-size: 13px; }
+        .icon-btn { background: #F3F4F6; border: none; border-radius: 8px; padding: 9px 12px; cursor: pointer; font-size: 15px; color: #6B7280; }
+        .icon-btn.deconnexion { background: #FEE2E2; color: #EF4444; }
+        .icon-btn.deconnexion:hover { background: #EF4444; color: white; }
+
+        /* CONTENT */
+        .content { padding: 24px; }
+        .page-title { font-size: 18px; font-weight: 700; color: #1F2937; margin-bottom: 18px; }
+
+        /* MESSAGES */
+        .msg { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+        .msg.success { background: #D1FAE5; color: #065F46; }
+        .msg.error   { background: #FEE2E2; color: #991B1B; }
+
+        /* TABLEAU */
+        .tableau-section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .btn-ajouter { width: 36px; height: 36px; background: #0087C2; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+        .btn-ajouter:hover { background: #006FA3; }
+
+        /* DATATABLES */
+        .dataTables_wrapper .dataTables_length { font-size: 13px; color: #374151; margin-bottom: 10px; }
+        .dataTables_wrapper .dataTables_length select { border: 1.5px solid #E5E7EB; border-radius: 6px; padding: 4px 8px; outline: none; font-size: 13px; margin: 0 4px; }
+        .dataTables_wrapper .dataTables_filter { margin-bottom: 10px; }
+        .dataTables_wrapper .dataTables_filter label { font-size: 13px; color: #374151; font-weight: 600; }
+        .dataTables_wrapper .dataTables_filter input { border: 1.5px solid #E5E7EB; border-radius: 8px; padding: 7px 12px; outline: none; font-size: 13px; margin-left: 8px; width: 200px; }
+        .dataTables_wrapper .dataTables_filter input:focus { border-color: #0087C2; }
+        .dataTables_wrapper .dataTables_info { font-size: 12px; color: #6B7280; margin-top: 12px; }
+        table.dataTable { border-collapse: collapse !important; width: 100% !important; margin-top: 8px !important; }
+        table.dataTable thead th { background: #F3F4F6; font-size: 12px; font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 11px 14px; border-bottom: 2px solid #E5E7EB !important; }
+        table.dataTable tbody td { font-size: 13px; color: #1F2937; padding: 11px 14px; border-bottom: 1px solid #F3F4F6 !important; vertical-align: middle; }
+        table.dataTable tbody tr:hover { background: #F0F9FF; }
+        .num { font-weight: 700; color: #0087C2; }
+        .dataTables_wrapper .dataTables_paginate { margin-top: 14px; text-align: right; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button { padding: 5px 10px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: #0087C2 !important; color: white !important; border: none !important; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #E0F4FF !important; color: #0087C2 !important; border: none !important; }
+
+        /* BADGE */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-green { background: #D1FAE5; color: #065F46; }
+        .badge-red   { background: #FEE2E2; color: #991B1B; }
+
+        /* BOUTON RECU */
+        .btn-recu { padding: 5px 12px; background: #0087C2; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; }
+        .btn-recu:hover { background: #006FA3; }
+
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; overflow-y: auto; padding: 20px 0; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: white; border-radius: 14px; width: 580px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin: auto; }
+        .modal-header { background: #0087C2; padding: 14px 20px; border-radius: 14px 14px 0 0; display: flex; align-items: center; justify-content: space-between; }
+        .modal-header-left { display: flex; align-items: center; gap: 10px; }
+        .modal-header-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
+        .modal-header h3 { color: white; font-size: 14px; font-weight: 700; margin: 0; }
+        .modal-header p { color: rgba(255,255,255,0.8); font-size: 11px; margin: 2px 0 0; }
+        .modal-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 700; }
+        .modal-close:hover { background: rgba(255,255,255,0.4); }
+        .modal-body { padding: 20px 24px; }
+        .modal-footer { padding: 14px 24px; border-top: 1px solid #E5E7EB; display: flex; justify-content: flex-end; gap: 12px; background: white; border-radius: 0 0 14px 14px; }
+
+        /* FORM */
+        .section-label { font-size: 11px; font-weight: 700; color: #0087C2; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 10px; padding-bottom: 4px; border-bottom: 1.5px solid #E0F4FF; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .form-row.one { grid-template-columns: 1fr; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-size: 11px; font-weight: 700; color: #374151; }
+        .form-group label .req { color: #EF4444; margin-left: 2px; }
+        .form-group input, .form-group select { padding: 9px 12px; border: 1.5px solid #E5E7EB; border-radius: 8px; font-size: 13px; font-family: Arial; color: #1F2937; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #0087C2; }
+        .form-group input::placeholder { color: #9CA3AF; }
+
+        /* RECAPITULATIF */
+        .recap { background: #F0F9FF; border-radius: 10px; padding: 16px 18px; margin-top: 14px; }
+        .recap-title { font-size: 11px; font-weight: 700; color: #0087C2; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .recap-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; color: #374151; }
+        .recap-row span:last-child { font-weight: 700; }
+        .recap-row.reste span:first-child { color: #EF4444; font-weight: 700; }
+        .recap-row.reste span:last-child { color: #EF4444; font-size: 16px; }
+
+        .btn-annuler { padding: 9px 24px; border: 1.5px solid #E5E7EB; border-radius: 8px; background: white; font-size: 13px; font-weight: 700; cursor: pointer; color: #6B7280; }
+        .btn-enregistrer { padding: 9px 24px; background: #0087C2; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .btn-enregistrer:hover { background: #006FA3; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+{% include 'sidebar.html' %}
+
+<!-- MAIN -->
+<div class="main">
+    <div class="topbar">
+        <h2>Paiements</h2>
+        <div class="topbar-right">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Rechercher..."/>
+            </div>
+            <button class="icon-btn"><i class="fa-solid fa-bell"></i></button>
+            <a href="{% url 'deconnexion_etudiant' %}">
+                <button class="icon-btn deconnexion">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </a>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="page-title">Liste des paiements</div>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="msg {% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="tableau-section">
+            <button class="btn-ajouter"
+                    onclick="document.getElementById('modalPaiement').classList.add('show')">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+
+            <table id="tablePaiements" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Etudiant</th>
+                        <th>Filière</th>
+                        <th>Montant versé</th>
+                        <th>Reste à payer</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in paiements %}
+                    <tr>
+                        <td class="num">{{ forloop.counter }}</td>
+                        <td>{{ p.etudiant.nom }} {{ p.etudiant.prenom }}</td>
+                        <td>{{ p.etudiant.filiere }}</td>
+                        <td><strong>{{ p.montant_verse }} F</strong></td>
+                        <td>
+                            {% if p.reste_a_payer <= 0 %}
+                                <span class="badge badge-green">Soldé</span>
+                            {% else %}
+                                <span class="badge badge-red">{{ p.reste_a_payer }} F</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ p.date_paiement|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'recu_paiement' p.id %}">
+                                <button class="btn-recu">
+                                    <i class="fa-solid fa-receipt"></i> Reçu
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align:center;color:#6B7280;padding:20px;">
+                            Aucun paiement enregistré pour le moment
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PAIEMENT -->
+<div class="modal-overlay" id="modalPaiement">
+    <div class="modal">
+        <form method="POST" id="formPaiement">
+        {% csrf_token %}
+
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-header-icon">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                </div>
+                <div>
+                    <h3>Enregistrer un paiement</h3>
+                    <p>Les champs sont obligatoires</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close"
+                    onclick="document.getElementById('modalPaiement').classList.remove('show')">X</button>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- ETUDIANT -->
+            <div class="section-label">Etudiant</div>
+            <div class="form-row one">
+                <div class="form-group">
+                    <label>SELECTIONNER L'ETUDIANT <span class="req">*</span></label>
+                    <select name="etudiant_id" id="selectEtudiant" required
+                            onchange="chargerInfoEtudiant(this)">
+                        <option value="">Rechercher l'étudiant </option>
+                        {% for e in etudiants %}
+                        <option value="{{ e.id }}"
+                                data-filiere="{{ e.filiere }}"
+                                data-frais="{{ e.filiere.frais_total }}"
+                                data-deja="{% for p in e.paiements.all %}{{ p.montant_verse }}{% endfor %}">
+                            {{ e.nom }} {{ e.prenom }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- PAIEMENT -->
+            <div class="section-label">Paiement</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>MONTANT VERSE <span class="req">*</span></label>
+                    <input type="number" name="montant_verse" id="montantVerse"
+                           placeholder="Ex: 75 000"
+                           oninput="calculerReste()" required/>
+                </div>
+                <div class="form-group">
+                    <label>DATE DU PAIEMENT <span class="req">*</span></label>
+                    <input type="date" name="date_paiement" required/>
+                </div>
+            </div>
+
+            <!-- CHAMPS HIDDEN -->
+            <input type="hidden" name="frais_total" id="fraisTotal" value="0"/>
+            <input type="hidden" name="deja_paye"   id="dejaPaye"   value="0"/>
+
+            <!-- RECAPITULATIF -->
+            <div class="recap">
+                <div class="recap-title">Récapitulatif</div>
+                <div class="recap-row">
+                    <span>Frais total de la filière</span>
+                    <span id="affFrais">0 F</span>
+                </div>
+                <div class="recap-row">
+                    <span>Déjà payé</span>
+                    <span id="affDeja">0 F</span>
+                </div>
+                <hr style="border:none;border-top:1px solid #E5E7EB;margin:10px 0;"/>
+                <div class="recap-row reste">
+                    <span>Reste à payer</span>
+                    <span id="affReste">0 F</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-annuler"
+                    onclick="document.getElementById('modalPaiement').classList.remove('show')">
+                Annuler
+            </button>
+            <button type="submit" class="btn-enregistrer">Enregistrer</button>
+        </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#tablePaiements').DataTable({
+            language: {
+                search:      "Rechercher :",
+                lengthMenu:  "Afficher _MENU_ lignes",
+                zeroRecords: "Aucun résultat",
+                emptyTable:  "Aucun paiement enregistré",
+                info:        "Page _PAGE_ sur _PAGES_",
+                infoEmpty:   "Aucun résultat",
+                paginate:    { previous: "←", next: "→" }
+            },
+            columnDefs: [{ orderable: false, targets: [0,6] }],
+            pageLength: 10
+        });
+    });
+
+    function chargerInfoEtudiant(select) {
+        var option = select.options[select.selectedIndex];
+        var frais  = parseFloat(option.getAttribute('data-frais')) || 0;
+        var deja   = parseFloat(option.getAttribute('data-deja'))  || 0;
+
+        document.getElementById('fraisTotal').value = frais;
+        document.getElementById('dejaPaye').value   = deja;
+        document.getElementById('affFrais').textContent = frais.toLocaleString() + ' F';
+        document.getElementById('affDeja').textContent  = deja.toLocaleString()  + ' F';
+        calculerReste();
+    }
+
+    function calculerReste() {
+        var frais   = parseFloat(document.getElementById('fraisTotal').value) || 0;
+        var deja    = parseFloat(document.getElementById('dejaPaye').value)   || 0;
+        var montant = parseFloat(document.getElementById('montantVerse').value) || 0;
+        var reste   = frais - deja - montant;
+        document.getElementById('affReste').textContent = reste.toLocaleString() + ' F';
+        document.getElementById('affReste').style.color = reste > 0 ? '#EF4444' : '#10B981';
+    }
+
+    document.getElementById('modalPaiement').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('show');
+    });
+</script>
+
+</body>
+</html>

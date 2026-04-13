@@ -1,0 +1,137 @@
+{% load static %}
+
+<style>
+    /* SIDEBAR */
+    .sidebar {
+        width: 220px;
+        min-width: 220px;
+        background: #0087C2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 10px;
+        height: 100vh;
+    }
+
+    .sidebar-logo { margin-bottom: 15px; }
+    .sidebar-logo img { width: 65px; }
+
+    .sidebar-menu { width: 100%; list-style: none; }
+
+    .sidebar-menu li a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 20px;
+        color: rgba(255,255,255,0.85);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .sidebar-menu li a:hover {
+        background: rgba(255,255,255,0.15);
+        color: white;
+    }
+
+    .sidebar-menu li a.active {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border-left: 4px solid white;
+    }
+
+    .sidebar-menu li a .ico {
+        width: 20px;
+        text-align: center;
+        font-size: 15px;
+    }
+</style>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <img src="{% static 'images/inov learn.png' %}" alt="INOV Learn"/>
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a href="{% url 'dashboard_admin' %}">
+                <span class="ico"><i class="fa-solid fa-house"></i></span>
+                Bienvenue {{ role }}
+            </a>
+        </li>
+
+        {% if request.session.admin_id %}
+        <li><a href="{% url 'etudiants' %}">
+            <span class="ico"><i class="fa-solid fa-user-graduate"></i></span>
+            Etudiants
+        </a></li>
+
+        <li><a href="{% url 'enseignants' %}">
+            <span class="ico"><i class="fa-solid fa-chalkboard-user"></i></span>
+            Enseignants
+        </a></li>
+
+        <li><a href="{% url 'emploi_du_temps' %}">
+            <span class="ico"><i class="fa-solid fa-calendar-days"></i></span>
+            Emploi du temps
+        </a></li>
+
+        <li><a href="{% url 'paiements' %}">
+            <span class="ico"><i class="fa-solid fa-money-bill-wave"></i></span>
+            Paiements
+        </a></li>
+
+        <li><a href="#">
+            <span class="ico"><i class="fa-solid fa-chart-bar"></i></span>
+            Rapports
+        </a></li>
+
+        <li><a href="{% url 'filieres' %}">
+            <span class="ico"><i class="fa-solid fa-layer-group"></i></span>
+            Filieres
+        </a></li>
+
+        <li><a href="{% url 'cours' %}">
+            <span class="ico"><i class="fa-solid fa-book"></i></span>
+            Cours
+        </a></li>
+
+        <li><a href="#">
+            <span class="ico"><i class="fa-solid fa-gear"></i></span>
+            Paramètres
+        </a></li>
+        {% endif %}
+
+        {% if request.session.enseignant_id %}
+        <li><a href="#">
+            <span class="ico"><i class="fa-solid fa-calendar-days"></i></span>
+            Emploi de temps
+        </a></li>
+
+        <li><a href="{% url 'evaluation_teacher' %}">
+            <span class="ico"><i class="fa-solid fa-clipboard-list"></i></span>
+            Evaluations
+        </a></li>
+
+        <li><a href="#">
+            <span class="ico"><i class="fa-solid fa-hand"></i></span>
+            Présence
+        </a></li>
+        {% endif %}
+
+        {% if request.session.etudiant_id %}
+        <li><a href="#">
+            <span class="ico"><i class="fa-solid fa-book-open"></i></span>
+            Mes cours
+        </a></li>
+
+        <li><a href="#">
+            <span class="ico"><i class="fa-solid fa-money-check-dollar"></i></span>
+            Mes paiements
+        </a></li>
+        {% endif %}
+    </ul>
+</div>

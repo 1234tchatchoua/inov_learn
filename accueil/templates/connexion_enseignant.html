@@ -1,0 +1,116 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Connexion Enseignant</title>
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: #0087C2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial;
+            color: white;
+        }
+
+        /* CARTE FORMULAIRE */
+        .carte {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 50px;
+            width: 400px;
+            text-align: center;
+        }
+
+        .carte h2 {
+            color: #F97316;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        /* CHAMPS */
+        .champ {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: Arial;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .champ:focus {
+            border-color: #F97316;
+        }
+
+        /* BOUTON */
+        .btn-connecter {
+            width: 100%;
+            padding: 14px;
+            background: #F97316;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-connecter:hover {
+            background: #EA6A0A;
+        }
+
+        /* RETOUR */
+        .retour {
+            margin-top: 20px;
+        }
+        .retour a {
+            color: white;
+            font-size: 13px;
+            text-decoration: none;
+        }
+        .retour a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="carte">
+        <h2>Connexion Enseignant</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="msg-error">❌ {{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <input class="champ" type="email" name="email"
+                   placeholder="Adresse email" required/>
+            <input class="champ" type="password" name="password"
+                   placeholder="Mot de passe" required/>
+            <button class="btn-connecter" type="submit">
+                SE CONNECTER
+            </button>
+        </form>
+    </div>
+
+    <div class="retour">
+        <a href="{% url 'accueil' %}"> Retour à l'accueil</a>
+    </div>
+
+</body>
+
+</html>

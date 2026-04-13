@@ -1,0 +1,259 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Evaluation Teacher</title>
+
+<style>
+
+/* RESET TOTAL */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+}
+
+/* SIDEBAR FIX */
+.sidebar {
+    position: fixed;
+    top: 0;        /* 🔥 TRÈS IMPORTANT */
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background: #0f172a;
+    color: white;
+    padding-top: 20px;
+}
+
+/* MAIN CONTENT */
+.main {
+    margin-left: 250px;
+    padding: 20px;
+    position: absolute;
+    top: 0;   /* 🔥 FORCE EN HAUT */
+    width: calc(100% - 250px);
+}
+
+/* TITLE */
+h2 {
+    margin-bottom: 20px;
+}
+
+/* TABS */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tabs button {
+    padding: 10px 20px;
+    border: none;
+    background: #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.tabs button.active {
+    background: #0d6efd;
+    color: white;
+}
+
+/* CARD */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* FORM */
+select, input {
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* BUTTON */
+.btn {
+    background: #0d6efd;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th {
+    background: #f1f5f9;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    width: 400px;
+    margin: 80px auto;
+    border-radius: 10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+{% include 'sidebar.html' %}
+
+<!-- MAIN -->
+<div class="main">
+
+<h2>Evaluation</h2>
+
+<div class="tabs">
+    <button class="active" onclick="showTab('evaluation', this)">Evaluation</button>
+    <button onclick="showTab('notes', this)">Notes</button>
+</div>
+
+<!-- EVALUATION -->
+<div id="evaluation" class="card">
+    <button class="btn" onclick="openModal()">+ Ajouter Evaluation</button>
+</div>
+
+<!-- NOTES -->
+<div id="notes" class="card" style="display:none;">
+
+<form method="GET">
+    <select name="filiere">
+        <option value="">Filière</option>
+        {% for f in filieres %}
+            <option value="{{ f.id }}">{{ f.nom }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="evaluation">
+        <option value="">Evaluation</option>
+        {% for e in evaluations %}
+            <option value="{{ e.id }}">{{ e.nom }}</option>
+        {% endfor %}
+    </select>
+
+    <button class="btn">Valider</button>
+</form>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="evaluation_id" value="{{ request.GET.evaluation }}">
+
+    <table>
+        <tr>
+            <th>Nom étudiant</th>
+            <th>Note</th>
+        </tr>
+
+        {% for e in etudiants %}
+        <tr>
+            <td>{{ e.nom }} {{ e.prenom }}</td>
+            <td>
+                <input type="number" name="note_{{ e.id }}">
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <button class="btn" name="save_notes">Enregistrer</button>
+</form>
+
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+<div class="modal-content">
+
+<form method="POST">
+    {% csrf_token %}
+
+    <h3>Ajouter Evaluation</h3>
+
+    <input type="text" name="nom" placeholder="Nom"><br><br>
+
+    <select name="filiere">
+    <option value="" disabled selected> Choisir une filière </option>
+
+    {% for f in filieres %}
+        <option value="{{ f.id }}">{{ f.nom }}</option>
+    {% endfor %}
+    </select>
+
+    <select name="cours" required>
+        <option value=""> Choisir un cours </option>
+        {% for c in cours %}
+        <option value="{{ c.id }}">{{ c.nom }} </option>
+        {% endfor %}
+    </select>
+
+
+    <input type="number" name="coefficient" placeholder="Coefficient"><br><br>
+
+    <button class="btn" name="add_evaluation">Ajouter</button>
+    <button type="button" onclick="closeModal()">Fermer</button>
+
+</form>
+
+</div>
+</div>
+
+<script>
+function showTab(tab, btn) {
+    document.getElementById('evaluation').style.display = 'none';
+    document.getElementById('notes').style.display = 'none';
+
+    document.getElementById(tab).style.display = 'block';
+
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function openModal() {
+    document.getElementById('modal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
