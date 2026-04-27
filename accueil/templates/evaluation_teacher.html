@@ -1,258 +1,416 @@
 
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title>Evaluation Teacher</title>
-
 <style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial; background:#f4f6f9; }
 
-/* RESET TOTAL */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
-}
-
-/* SIDEBAR FIX */
 .sidebar {
     position: fixed;
-    top: 0;        /* 🔥 TRÈS IMPORTANT */
-    left: 0;
-    width: 250px;
-    height: 100vh;
-    background: #0f172a;
-    color: white;
-    padding-top: 20px;
+    top:0; left:0;
+    width:250px;
+    height:100vh;
+    background:#0f172a;
 }
 
-/* MAIN CONTENT */
-.main {
-    margin-left: 250px;
-    padding: 20px;
-    position: absolute;
-    top: 0;   /* 🔥 FORCE EN HAUT */
-    width: calc(100% - 250px);
-}
+.main { margin-left:250px; padding:20px; }
+h2 { margin-bottom:30px; }
 
-/* TITLE */
-h2 {
-    margin-bottom: 20px;
-}
-
-/* TABS */
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
+.tabs { display:flex; gap:10px; margin-bottom:25px; }
 .tabs button {
-    padding: 10px 20px;
-    border: none;
-    background: #e5e7eb;
-    border-radius: 8px;
-    cursor: pointer;
+    padding:10px 20px;
+    border:none;
+    background:#e5e7eb;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+}
+.tabs button.active { background:#0d6efd; color:white; }
+
+.card { background:white; padding:20px; border-radius:10px; }
+.top-bar { margin-bottom:20px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+select, input[type=text], input[type=number] {
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #ccc;
 }
 
-.tabs button.active {
-    background: #0d6efd;
-    color: white;
-}
+.btn { background:#0d6efd; color:white; padding:8px 15px; border:none; border-radius:6px; cursor:pointer; }
+.btn-warning { background:orange; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; }
+.btn-success { background:#198754; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; }
+.btn-print { background:#6f42c1; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; }
 
-/* CARD */
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* FORM */
-select, input {
-    padding: 8px;
-    margin-right: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-/* BUTTON */
-.btn {
-    background: #0d6efd;
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-/* TABLE */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th {
-    background: #f1f5f9;
-}
-
-th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
-}
+table { width:100%; border-collapse:collapse; margin-top:15px; }
+th, td { padding:10px; border:1px solid #ddd; text-align:left; }
+th { background:#f1f5f9; }
 
 /* MODAL */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.5);
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
 }
-
+.modal.open { display:flex; }
 .modal-content {
-    background: white;
-    padding: 20px;
-    width: 400px;
-    margin: 80px auto;
-    border-radius: 10px;
+    background:white;
+    padding:25px;
+    width:420px;
+    border-radius:10px;
+}
+.modal-content h3 { margin-bottom:15px; }
+.modal-content input, .modal-content select {
+    width:100%;
+    margin-bottom:12px;
+    padding:8px;
+    border:1px solid #ccc;
+    border-radius:6px;
+}
+.modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:10px; }
+
+/* BULLETIN PRINT */
+.bulletin-section { margin-top:20px; }
+.bulletin-card {
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:15px;
+    margin-bottom:20px;
+    background:#fff;
+}
+.bulletin-header { margin-bottom:10px; font-size:15px; }
+.bulletin-header span { font-weight:bold; }
+.rang-badge {
+    display:inline-block;
+    background:#0d6efd;
+    color:white;
+    border-radius:50%;
+    width:30px; height:30px;
+    text-align:center;
+    line-height:30px;
+    font-weight:bold;
+    margin-right:8px;
 }
 
+/* MODAL IMPRIMER */
+#modalImprimer .modal-content { width:350px; }
+
+/* IMPRESSION */
+@media print {
+    .sidebar, .tabs, .top-bar, .no-print { display:none !important; }
+    .main { margin-left:0; }
+    .bulletin-card { page-break-inside: avoid; border:1px solid #000; }
+}
 </style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
 {% include 'sidebar.html' %}
 
-<!-- MAIN -->
 <div class="main">
-
 <h2>Evaluation</h2>
 
 <div class="tabs">
-    <button class="active" onclick="showTab('evaluation', this)">Evaluation</button>
-    <button onclick="showTab('notes', this)">Notes</button>
+    <button onclick="showTab('evaluation', this)" id="btn-tab-evaluation">Evaluations</button>
+    <button onclick="showTab('notes', this)" id="btn-tab-notes">Notes</button>
+    <button onclick="showTab('bulletin', this)" id="btn-tab-bulletin">Bulletins</button>
 </div>
 
-<!-- EVALUATION -->
-<div id="evaluation" class="card">
-    <button class="btn" onclick="openModal()">+ Ajouter Evaluation</button>
+<!-- ================= TAB EVALUATIONS ================= -->
+<div id="evaluation" class="card" style="display:none;">
+    <div class="top-bar">
+        <button class="btn" onclick="document.getElementById('modalAjout').classList.add('open')">+ Ajouter Evaluation</button>
+        <input type="text" id="searchInput" placeholder="Rechercher...">
+    </div>
+
+    <table id="tableEval">
+        <thead>
+            <tr>
+                <th>Nom</th><th>Filière</th><th>Cours</th><th>Coef</th><th>Séquence</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for e in evaluations %}
+        <tr>
+            <td>{{ e.nom }}</td>
+            <td>{{ e.filiere.nom }}</td>
+            <td>{{ e.cours.nom }}</td>
+            <td>{{ e.coefficient }}</td>
+            <td>{{ e.sequence }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 
-<!-- NOTES -->
+<!-- ================= TAB NOTES ================= -->
 <div id="notes" class="card" style="display:none;">
 
-<form method="GET">
-    <select name="filiere">
-        <option value="">Filière</option>
-        {% for f in filieres %}
-            <option value="{{ f.id }}">{{ f.nom }}</option>
-        {% endfor %}
-    </select>
+    <form method="GET" class="top-bar">
+        <input type="hidden" name="tab" value="notes">
 
-    <select name="evaluation">
-        <option value="">Evaluation</option>
-        {% for e in evaluations %}
-            <option value="{{ e.id }}">{{ e.nom }}</option>
-        {% endfor %}
-    </select>
+        <select name="filiere" id="filiereSelect" onchange="this.form.submit()">
+            <option value="">-- Filière --</option>
+            {% for f in filieres %}
+            <option value="{{ f.id }}" {% if request.GET.filiere == f.id|stringformat:"s" %}selected{% endif %}>{{ f.nom }}</option>
+            {% endfor %}
+        </select>
 
-    <button class="btn">Valider</button>
-</form>
+        <select name="evaluation" id="evaluationSelect" {% if not request.GET.filiere %}disabled{% endif %}>
+            <option value="">-- Evaluation --</option>
+            {% for e in evaluations %}
+            {% if e.filiere_id|stringformat:"s" == request.GET.filiere %}
+            <option value="{{ e.id }}" {% if request.GET.evaluation == e.id|stringformat:"s" %}selected{% endif %}>{{ e.nom }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
 
-<form method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="evaluation_id" value="{{ request.GET.evaluation }}">
+        <button class="btn" type="submit">Valider</button>
+    </form>
 
+    {% if request.GET.evaluation %}
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="evaluation_id" value="{{ request.GET.evaluation }}">
+
+        <table>
+            <thead>
+                <tr><th>Nom étudiant</th><th>Note /20</th></tr>
+            </thead>
+            <tbody>
+            {% for e in etudiants %}
+            <tr>
+                <td>{{ e.nom }} {{ e.prenom }}</td>
+                <td>
+                    <input type="number"
+                           name="note_{{ e.id }}"
+                           min="0" max="20" step="0.25"
+                           value="{{ e.note_actuelle }}"
+                           placeholder="—">
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <button class="btn" name="save_notes"> Enregistrer les notes</button>
+    </form>
+    {% else %}
+    <p style="color:gray; margin-top:15px;">Sélectionnez une filière et une évaluation pour saisir les notes.</p>
+    {% endif %}
+</div>
+
+<!-- ================= TAB BULLETINS ================= -->
+<!-- ================= TAB BULLETINS ================= -->
+<div id="bulletin" class="card" style="display:none;">
+
+    <div class="top-bar">
+        <form method="GET" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <input type="hidden" name="tab" value="bulletin">
+
+            <select name="filiere" onchange="this.form.submit()">
+                <option value="">-- Filière --</option>
+                {% for f in filieres %}
+                <option value="{{ f.id }}" {% if request.GET.filiere == f.id|stringformat:"s" %}selected{% endif %}>{{ f.nom }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="evaluation" id="evalSelectBulletin">
+                <option value="">-- Evaluation --</option>
+                {% for e in evaluations %}
+                {% if e.filiere_id|stringformat:"s" == request.GET.filiere %}
+                <option value="{{ e.id }}" {% if request.GET.evaluation == e.id|stringformat:"s" %}selected{% endif %}>
+                    {{ e.nom }} ({{ e.sequence }})
+                </option>
+                {% endif %}
+                {% endfor %}
+            </select>
+
+            <button class="btn" type="submit">Valider</button>
+        </form>
+    </div>
+
+    {% if bulletin_data %}
     <table>
+        <thead>
+            <tr>
+                <th>Nom étudiant</th>
+                <th>Coef</th>
+                <th>Note /20</th>
+                <th>Total (Note × Coef)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for b in bulletin_data %}
         <tr>
-            <th>Nom étudiant</th>
-            <th>Note</th>
-        </tr>
-
-        {% for e in etudiants %}
-        <tr>
-            <td>{{ e.nom }} {{ e.prenom }}</td>
-            <td>
-                <input type="number" name="note_{{ e.id }}">
+            <td>{{ b.student.nom }} {{ b.student.prenom }}</td>
+            <td>{{ b.coef }}</td>
+            <td>{{ b.note }}</td>
+            <td>{{ b.total }}</td>
+            <td style="display:flex; gap:8px;">
+                <button class="btn-warning"
+                    onclick="ouvrirModifierNote(
+                        '{{ b.student.id }}',
+                        '{{ b.eval_id }}',
+                        '{{ b.note_id }}',
+                        '{{ b.note }}',
+                        '{{ b.matiere }}',
+                        '{{ b.student.nom }} {{ b.student.prenom }}'
+                    )">
+                    ✏️ Modifier
+                </button>
+                <a href="/bulletin-etudiant/{{ b.student.id }}/?evaluation={{ request.GET.evaluation }}"
+                   target="_blank" class="btn-success" style="text-decoration:none; padding:6px 12px; border-radius:6px;">
+                    📄 Bulletin
+                </a>
             </td>
         </tr>
         {% endfor %}
+        </tbody>
     </table>
-
-    <button class="btn" name="save_notes">Enregistrer</button>
-</form>
-
+    {% elif request.GET.filiere and request.GET.evaluation %}
+    <p style="color:gray; margin-top:15px;">Aucune note trouvée pour cette sélection.</p>
+    {% else %}
+    <p style="color:gray; margin-top:15px;">Sélectionnez une filière et une évaluation pour afficher les résultats.</p>
+    {% endif %}
 </div>
 
-</div>
 
-<!-- MODAL -->
-<div id="modal" class="modal">
+<!-- ================= MODAL AJOUT EVALUATION ================= -->
+<div id="modalAjout" class="modal">
 <div class="modal-content">
+    <h3> Ajouter une Évaluation</h3>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="nom" placeholder="Nom de l'évaluation" required>
 
-<form method="POST">
-    {% csrf_token %}
+        <select name="filiere" required>
+            <option value="">-- Choisir une filière --</option>
+            {% for f in filieres %}
+            <option value="{{ f.id }}">{{ f.nom }}</option>
+            {% endfor %}
+        </select>
 
-    <h3>Ajouter Evaluation</h3>
+        <select name="cours" required>
+            <option value="">-- Choisir un cours --</option>
+            {% for c in cours %}
+            <option value="{{ c.id }}">{{ c.nom }}</option>
+            {% endfor %}
+        </select>
 
-    <input type="text" name="nom" placeholder="Nom"><br><br>
+        <select name="sequence" required>
+            <option value="">-- Séquence --</option>
+            {% for s in sequences %}
+            <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+        </select>
 
-    <select name="filiere">
-    <option value="" disabled selected> Choisir une filière </option>
+        <input type="number" name="coefficient" placeholder="Coefficient" step="0.5" min="1" required>
 
-    {% for f in filieres %}
-        <option value="{{ f.id }}">{{ f.nom }}</option>
-    {% endfor %}
-    </select>
-
-    <select name="cours" required>
-        <option value=""> Choisir un cours </option>
-        {% for c in cours %}
-        <option value="{{ c.id }}">{{ c.nom }} </option>
-        {% endfor %}
-    </select>
-
-
-    <input type="number" name="coefficient" placeholder="Coefficient"><br><br>
-
-    <button class="btn" name="add_evaluation">Ajouter</button>
-    <button type="button" onclick="closeModal()">Fermer</button>
-
-</form>
-
+        <div class="modal-footer">
+            <button type="button" onclick="document.getElementById('modalAjout').classList.remove('open')" style="padding:8px 15px; border:none; border-radius:6px; cursor:pointer;">Fermer</button>
+            <button class="btn" name="add_evaluation">Ajouter</button>
+        </div>
+    </form>
 </div>
 </div>
+
+<!-- ================= MODAL MODIFIER NOTE ================= -->
+<div id="modalModifier" class="modal">
+<div class="modal-content">
+    <h3>Modifier la Note</h3>
+    <p id="modifierInfo" style="margin-bottom:12px; color:#555;"></p>
+    <form method="POST" id="formModifier">
+        {% csrf_token %}
+        <input type="hidden" name="modifier_note" value="1">
+        <input type="hidden" name="etudiant_id" id="modEtudiantId">
+        <input type="hidden" name="eval_id" id="modEvalId">
+        <input type="hidden" name="note_id" id="modNoteId">
+
+        <label>Nouvelle note (/20)</label>
+        <input type="number" name="nouvelle_note" id="modNouvelleNote" min="0" max="20" step="0.25" required style="width:100%; margin-top:6px;">
+
+        <div class="modal-footer">
+            <button type="button" onclick="document.getElementById('modalModifier').classList.remove('open')" style="padding:8px 15px; border:none; border-radius:6px; cursor:pointer;">Annuler</button>
+            <button class="btn-success" type="submit"> Enregistrer</button>
+        </div>
+    </form>
+</div>
+</div>
+
 
 <script>
+/* ===== TABS ===== */
 function showTab(tab, btn) {
-    document.getElementById('evaluation').style.display = 'none';
-    document.getElementById('notes').style.display = 'none';
-
+    ['evaluation','notes','bulletin'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+    });
     document.getElementById(tab).style.display = 'block';
 
     document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if(btn) btn.classList.add('active');
 }
 
-function openModal() {
-    document.getElementById('modal').style.display = 'block';
+window.onload = function(){
+    const params = new URLSearchParams(window.location.search);
+    let tab = params.get("tab") || "evaluation";
+
+    const tabMap = {
+        "evaluation": 0,
+        "notes": 1,
+        "bulletin": 2
+    };
+
+    const buttons = document.querySelectorAll('.tabs button');
+    const idx = tabMap[tab] !== undefined ? tabMap[tab] : 0;
+    showTab(tab, buttons[idx]);
+};
+
+/* ===== SEARCH ===== */
+document.getElementById("searchInput") && document.getElementById("searchInput").addEventListener("keyup", function(){
+    let val = this.value.toLowerCase();
+    document.querySelectorAll("#tableEval tbody tr").forEach(r => {
+        r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none";
+    });
+});
+
+/* ===== AJAX filiereSelect notes ===== */
+const filiereSelectNotes = document.getElementById("filiereSelect");
+if(filiereSelectNotes){
+    filiereSelectNotes.addEventListener("change", function(){
+        // Le form submit recharge la page avec la bonne filière
+        // le select evaluation sera rempli côté Django
+    });
 }
 
-function closeModal() {
-    document.getElementById('modal').style.display = 'none';
+/* ===== MODAL MODIFIER NOTE ===== */
+function ouvrirModifierNote(etudiantId, evalId, noteId, noteActuelle, matiere, nomEtudiant) {
+    document.getElementById('modEtudiantId').value = etudiantId;
+    document.getElementById('modEvalId').value = evalId;
+    document.getElementById('modNoteId').value = noteId;
+    document.getElementById('modNouvelleNote').value = noteActuelle;
+    document.getElementById('modifierInfo').innerHTML =
+        `<b>Étudiant :</b> ${nomEtudiant}<br><b>Matière :</b> ${matiere}<br><b>Note actuelle :</b> ${noteActuelle || '—'}`;
+    document.getElementById('modalModifier').classList.add('open');
 }
+
+/* Fermer modals en cliquant dehors */
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', function(e){
+        if(e.target === this) this.classList.remove('open');
+    });
+});
 </script>
 
 </body>

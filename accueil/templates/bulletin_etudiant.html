@@ -1,0 +1,566 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Bulletin — {{ etudiant.nom }} {{ etudiant.prenom }}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: #e8ecf0;
+    min-height: 100vh;
+  }
+
+  /* BOUTON RETOUR + IMPRIMER - hors page */
+  .action-bar {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    padding: 18px;
+  }
+  .btn-back {
+    background: #6c757d;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-print {
+    background: #0d6efd;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-back:hover { background: #5a6268; }
+  .btn-print:hover { background: #0b5ed7; }
+
+  /* PAGE BULLETIN A4 */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 30px;
+    background: white;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* BANDE SUPERIEURE COLOREE */
+  .top-band {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    height: 8px;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px 16px;
+    border-bottom: 2px solid #e9ecef;
+  }
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-logo img {
+    height: 55px;
+    object-fit: contain;
+  }
+  .logo-text .school-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0d6efd;
+    letter-spacing: 1px;
+  }
+  .logo-text .school-sub {
+    font-size: 10px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  .header-title {
+    text-align: center;
+    flex: 1;
+    padding: 0 20px;
+  }
+  .header-title h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #1a1a2e;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  .header-title .sous-titre {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  .header-right {
+    text-align: right;
+  }
+  .seq-badge {
+    display: inline-block;
+    background: #0d6efd;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+  }
+  .header-right .annee {
+    font-size: 11px;
+    color: #666;
+  }
+
+  /* FICHE ETUDIANT */
+  .fiche {
+    margin: 16px 28px;
+    background: #f8f9ff;
+    border: 1px solid #dee2ff;
+    border-left: 5px solid #0d6efd;
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  .fiche-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .fiche-item .fi-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888;
+    font-weight: 600;
+  }
+  .fiche-item .fi-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  /* TABLE DES NOTES */
+  .table-section {
+    padding: 0 28px;
+    margin-bottom: 16px;
+  }
+  .table-section table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .table-section thead tr {
+    background: #1a1a2e;
+    color: white;
+  }
+  .table-section th {
+    padding: 9px 10px;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .table-section td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+  }
+  .table-section tbody tr:nth-child(even) {
+    background: #f8f9ff;
+  }
+  .table-section tbody tr:hover {
+    background: #eef3ff;
+  }
+  .note-val {
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .note-val.bien { color: #059669; }
+  .note-val.passable { color: #d97706; }
+  .note-val.mauvais { color: #dc2626; }
+  .note-val.absent { color: #aaa; font-weight: 400; font-style: italic; }
+
+  tfoot tr td {
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    background: #e8ecf0 !important;
+    padding: 10px;
+    border-top: 2px solid #ccc;
+  }
+
+  /* RECAP */
+  .recap {
+    display: flex;
+    gap: 12px;
+    padding: 0 28px;
+    margin-bottom: 16px;
+  }
+  .recap-card {
+    flex: 1;
+    border-radius: 10px;
+    padding: 14px 10px;
+    text-align: center;
+    border: 1px solid transparent;
+  }
+  .rc-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .rc-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .rc-sub {
+    font-size: 10px;
+    color: #888;
+    margin-top: 3px;
+  }
+  .rc-blue { background: #eff6ff; border-color: #bfdbfe; }
+  .rc-blue .rc-value { color: #1d4ed8; }
+  .rc-green { background: #f0fdf4; border-color: #bbf7d0; }
+  .rc-green .rc-value { color: #15803d; }
+  .rc-orange { background: #fff7ed; border-color: #fed7aa; }
+  .rc-orange .rc-value { color: #c2410c; }
+  .rc-yellow { background: #fefce8; border-color: #fde68a; }
+  .rc-yellow .rc-value { color: #b45309; }
+
+  /* MENTION */
+  .mention {
+    margin: 0 28px 16px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .mention-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+  .mention-value { font-size: 16px; font-weight: 800; letter-spacing: 2px; }
+  .m-tres-bien { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+  .m-bien { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+  .m-assez { background: #fefce8; color: #854d0e; border: 1px solid #fde68a; }
+  .m-passable { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+  .m-insuf { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+  /* DECISION */
+  .decision {
+    margin: 0 28px 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+  }
+  .decision strong {
+    color: {% if moyenne >= 10 %}#059669{% else %}#dc2626{% endif %};
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+  }
+
+  /* SIGNATURES */
+  .signatures {
+    margin: auto 28px 0;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .sig-box {
+    text-align: center;
+    width: 170px;
+  }
+  .sig-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #333;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 35px;
+  }
+  .sig-line {
+    border-top: 1px solid #999;
+    padding-top: 5px;
+    font-size: 10px;
+    color: #888;
+  }
+  .sig-cachet {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed #0d6efd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #0d6efd;
+    text-align: center;
+    margin: 0 auto 0;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* FOOTER */
+  .footer-band {
+    margin-top: 20px;
+    background: #1a1a2e;
+    color: white;
+    text-align: center;
+    padding: 8px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    opacity: 0.85;
+  }
+
+  /* ===== PRINT ===== */
+  @media print {
+    body { background: white; }
+    .action-bar { display: none !important; }
+    .page {
+      box-shadow: none;
+      margin: 0;
+      width: 100%;
+      min-height: auto;
+    }
+
+    @page {
+        margin: 0;
+       
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- BOUTONS HORS PAGE -->
+<div class="action-bar no-print">
+  <a href="/evaluation-teacher/?tab=bulletin&filiere={{ filiere_id }}&evaluation={{ evaluation_id }}" class="btn-back">← Retour</a>
+  <button class="btn-print" onclick="window.print()">🖨️ Imprimer</button>
+</div>
+
+<!-- PAGE BULLETIN -->
+<div class="page">
+
+  <div class="top-band"></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <img src="{% static 'images/inov learn.png' %}" alt="INOV Learn">
+      <div class="logo-text">
+        <div class="school-name">INOV LEARN</div>
+        <div class="school-sub">Centre de Formation — Douala</div>
+      </div>
+    </div>
+
+    <div class="header-title">
+      <h1>Bulletin de Notes</h1>
+      <div class="sous-titre">Résultats Académiques Officiels</div>
+    </div>
+
+    <div class="header-right">
+      <div class="seq-badge">{{ evaluation.sequence }}</div>
+      <div class="annee">Année : {% now "Y" %}</div>
+      <div class="annee" style="margin-top:3px;">Filière : <strong>{{ etudiant.filiere.nom }}</strong></div>
+    </div>
+  </div>
+
+  <!-- FICHE ETUDIANT -->
+  <div class="fiche">
+    <div class="fiche-item">
+      <span class="fi-label">Nom & Prénom</span>
+      <span class="fi-value">{{ etudiant.nom|upper }} {{ etudiant.prenom }}</span>
+    </div>
+    <div class="fiche-item">
+      <span class="fi-label">Formation</span>
+      <span class="fi-value">{{ etudiant.formation }}</span>
+    </div>
+    <div class="fiche-item">
+      <span class="fi-label">Filière</span>
+      <span class="fi-value">{{ etudiant.filiere.nom }}</span>
+    </div>
+    <div class="fiche-item">
+      <span class="fi-label">Séquence</span>
+      <span class="fi-value">{{ evaluation.sequence }}</span>
+    </div>
+    <div class="fiche-item">
+      <span class="fi-label">Né(e) le</span>
+      <span class="fi-value">{{ etudiant.date_naissance|date:"d/m/Y" }}</span>
+    </div>
+    <div class="fiche-item">
+      <span class="fi-label">Année académique</span>
+      <span class="fi-value">{% now "Y" %}</span>
+    </div>
+  </div>
+
+  <!-- TABLE NOTES -->
+  <div class="table-section">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Matière</th>
+          <th>Coef</th>
+          <th>Note /20</th>
+          <th>Points</th>
+          <th>Appréciation</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for ligne in lignes %}
+      <tr>
+        <td style="color:#aaa; font-size:11px;">{{ forloop.counter }}</td>
+        <td><strong>{{ ligne.matiere }}</strong></td>
+        <td>{{ ligne.coef }}</td>
+        <td>
+          {% if ligne.note %}
+            <span class="note-val {% if ligne.note >= 14 %}bien{% elif ligne.note >= 10 %}passable{% else %}mauvais{% endif %}">
+              {{ ligne.note }}
+            </span>
+          {% else %}
+            <span class="note-val absent">Abs.</span>
+          {% endif %}
+        </td>
+        <td><strong>{{ ligne.points }}</strong></td>
+        <td style="font-size:11px; color:#666;">
+          {% if ligne.note %}
+            {% if ligne.note >= 16 %}Très Bien
+            {% elif ligne.note >= 14 %}Bien
+            {% elif ligne.note >= 12 %}Assez Bien
+            {% elif ligne.note >= 10 %}Passable
+            {% else %}Insuffisant{% endif %}
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">TOTAL GÉNÉRAL</td>
+          <td>{{ total_coef }}</td>
+          <td>—</td>
+          <td>{{ total_points }}</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- RECAP CARDS -->
+  <div class="recap">
+    <div class="recap-card rc-blue">
+      <div class="rc-label">Total Points</div>
+      <div class="rc-value">{{ total_points }}</div>
+      <div class="rc-sub">sur {{ total_coef }} coef</div>
+    </div>
+    <div class="recap-card rc-green">
+      <div class="rc-label">Moyenne</div>
+      <div class="rc-value">{{ moyenne }}</div>
+      <div class="rc-sub">/ 20</div>
+    </div>
+    <div class="recap-card rc-orange">
+      <div class="rc-label">Total Coef</div>
+      <div class="rc-value">{{ total_coef }}</div>
+      <div class="rc-sub">matières</div>
+    </div>
+    <div class="recap-card rc-yellow">
+      <div class="rc-label">Rang</div>
+      <div class="rc-value">{{ rang }}{% if rang == 1 %}er{% else %}e{% endif %}</div>
+      <div class="rc-sub">/ {{ total_etudiants }} étudiants</div>
+    </div>
+  </div>
+
+  <!-- MENTION -->
+  {% if moyenne >= 16 %}
+  <div class="mention m-tres-bien">
+    <span class="mention-label">Mention</span>
+    <span class="mention-value"> TRÈS BIEN</span>
+  </div>
+  {% elif moyenne >= 14 %}
+  <div class="mention m-bien">
+    <span class="mention-label">Mention</span>
+    <span class="mention-value"> BIEN</span>
+  </div>
+  {% elif moyenne >= 12 %}
+  <div class="mention m-assez">
+    <span class="mention-label">Mention</span>
+    <span class="mention-value"> ASSEZ BIEN</span>
+  </div>
+  {% elif moyenne >= 10 %}
+  <div class="mention m-passable">
+    <span class="mention-label">Mention</span>
+    <span class="mention-value"> PASSABLE</span>
+  </div>
+  {% else %}
+  <div class="mention m-insuf">
+    <span class="mention-label">Mention</span>
+    <span class="mention-value"> INSUFFISANT</span>
+  </div>
+  {% endif %}
+
+  <!-- DECISION -->
+  <div class="decision">
+    Décision du jury :
+    <strong>{% if moyenne >= 10 %}ADMIS(E){% else %}AJOURNÉ(E){% endif %}</strong>
+    &nbsp;—&nbsp; Délivré le {% now "d/m/Y" %}
+  div>
+
+  <!-- SIGNATURES -->
+  <div class="signatures">
+    <div class="sig-box">
+      <div class="sig-title">Le Directeur</div>
+      <div class="sig-line">Signature & Cachet</div>
+    </div>
+    <div class="sig-cachet">CACHET<br>INOV<br>LEARN</div>
+    <div class="sig-box">
+      <div class="sig-title">Responsable Pédagogique</div>
+      <div class="sig-line">Signature</div>
+    </div>
+  </div>
+
+  <div class="footer-band">
+    CENTRE DE FORMATION INOV LEARN — DOUALA, CAMEROUN &nbsp;|&nbsp; Ce bulletin est un document officiel
+  </div>
+
+</div>
+
+</body>
+</html>

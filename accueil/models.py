@@ -140,13 +140,19 @@ class EmploiDuTemps(models.Model):
 
 
 class Evaluation(models.Model):
+    SEQUENCE_CHOICES = [
+        ('S1','S1'), ('S2','S2'), ('S3','S3'),
+        ('S4','S4'), ('S5','S5'), ('S6','S6')
+    ]
+
     nom = models.CharField(max_length=100)
     filiere = models.ForeignKey(Filiere, on_delete=models.CASCADE)
     cours = models.ForeignKey(Cours, on_delete=models.CASCADE)
     coefficient = models.FloatField()
+    sequence = models.CharField(max_length=2, choices=SEQUENCE_CHOICES, default='S1')
 
     def __str__(self):
-        return self.nom
+        return f"{self.nom} ({self.sequence})"
 
 
 class Note(models.Model):
@@ -156,3 +162,5 @@ class Note(models.Model):
 
     def __str__(self):
         return f"{self.etudiant.nom} - {self.note}"
+
+

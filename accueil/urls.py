@@ -7,7 +7,6 @@ urlpatterns = [
     path('connexion-enseignant/', views.connexion_enseignant, name='connexion_enseignant'),
     path('dashboard-admin/', views.dashboard_admin, name='dashboard_admin'),
     path('etudiants/', views.students, name='etudiants'),
-    path('dashboard-etudiant/', views.dashboard_etudiant, name='dashboard_etudiant'),
     path('deconnexion-etudiant/', views.deconnexion_etudiant, name='deconnexion_etudiant'),
     path('admin-login/', views.login_admin, name='login_admin'),
     path('admin-inscription/', views.inscription_admin, name='inscription_admin'),
@@ -19,6 +18,16 @@ urlpatterns = [
     path('emploi-du-temps/', views.emploi_du_temps, name='emploi_du_temps'),
     path('emploi-events/', views.emploi_events, name='emploi_events'),
     path('evaluation-teacher/', views.evaluation_teacher, name='evaluation_teacher'),
+    path('get-evaluations/', views.get_evaluations, name='get_evaluations'),
+    path('bulletin-etudiant/<int:etudiant_id>/', views.bulletin_etudiant, name='bulletin_etudiant'),
+    path('delete-etudiant/<int:id>/', views.delete_etudiant, name='delete_etudiant'),
+    path('edit-etudiant/<int:id>/', views.edit_etudiant, name='edit_etudiant'),
+    path('delete-enseignant/<int:id>/', views.delete_enseignant, name='delete_enseignant'),
+    path('edit-enseignant/<int:id>/', views.edit_enseignant, name='edit_enseignant'),
+    path('delete-filiere/<int:id>/', views.delete_filiere, name='delete_filiere'),
+    path('edit-filiere/<int:id>/', views.edit_filiere, name='edit_filiere'),
+    path('delete-cours/<int:id>/', views.delete_cours, name='delete_cours'),
+    path('edit-cours/<int:id>/', views.edit_cours, name='edit_cours'),
 
 
 ]

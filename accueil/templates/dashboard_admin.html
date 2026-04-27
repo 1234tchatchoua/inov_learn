@@ -2,196 +2,112 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard Admin - INOV Learn</title>
+    <title>Dashboard - INOV Learn</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; background: #F3F4F6; display: flex; height: 100vh; overflow: hidden; }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #F3F4F6;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
 
-
-
-        /* MAIN */
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        /* TOPBAR */
-        .topbar {
-            background: white;
-            padding: 14px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #E5E7EB;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .topbar h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1F2937;
-        }
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: #0087C2;
-            border-radius: 8px;
-            padding: 9px 14px;
-            gap: 8px;
-            width: 230px;
-        }
-        .search-bar input {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 13px;
-            width: 100%;
-        }
+        .topbar { background: white; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E5E7EB; position: sticky; top: 0; z-index: 10; }
+        .topbar h2 { font-size: 20px; font-weight: 700; color: #1F2937; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .search-bar { display: flex; align-items: center; background: #0087C2; border-radius: 8px; padding: 9px 14px; gap: 8px; width: 230px; }
+        .search-bar input { background: transparent; border: none; outline: none; color: white; font-size: 13px; width: 100%; }
         .search-bar input::placeholder { color: rgba(255,255,255,0.75); }
         .search-bar i { color: white; font-size: 13px; }
+        .icon-btn { background: #F3F4F6; border: none; border-radius: 8px; padding: 9px 12px; cursor: pointer; font-size: 15px; color: #6B7280; text-decoration: none; display: inline-flex; align-items: center; }
+        .icon-btn:hover { background: #E5E7EB; }
+        .icon-btn.deconnexion { background: #FEE2E2; color: #EF4444; }
+        .icon-btn.deconnexion:hover { background: #EF4444; color: white; }
 
-        .icon-btn {
-            background: #F3F4F6;
-            border: none;
-            border-radius: 8px;
-            padding: 9px 12px;
-            cursor: pointer;
-            font-size: 15px;
-            color: #6B7280;
-            transition: all 0.2s;
-        }
-        .icon-btn:hover { background: #E5E7EB; color: #1F2937; }
-
-        /* CONTENT */
         .content { padding: 28px; }
 
         /* STATS */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 24px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 14px;
-            padding: 22px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 24px; }
+        .stat-card { background: white; border-radius: 14px; padding: 22px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .stat-card.blue { background: #0087C2; }
-        .stat-card.blue .stat-label,
-        .stat-card.blue .stat-num { color: white !important; }
-        .stat-card.blue .stat-icon {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
+        .stat-card.blue .stat-label, .stat-card.blue .stat-num { color: white !important; }
+        .stat-card.blue .stat-icon { background: rgba(255,255,255,0.2); color: white; }
         .stat-info { display: flex; flex-direction: column; gap: 8px; }
-        .stat-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: #6B7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .stat-num {
-            font-size: 38px;
-            font-weight: 800;
-            color: #1F2937;
-            line-height: 1;
-        }
+        .stat-label { font-size: 12px; font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-num { font-size: 38px; font-weight: 800; color: #1F2937; line-height: 1; }
         .stat-num.orange { color: #F97316; }
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         .si-orange { background: #FFF3EC; color: #F97316; }
-        .si-blue   { background: #E0F4FF; color: #0087C2; }
-        .si-red    { background: #FEE2E2; color: #EF4444; }
+        .si-blue { background: #E0F4FF; color: #0087C2; }
+        .si-red { background: #FEE2E2; color: #EF4444; }
 
-        /* ACTIONS RAPIDES */
-        .section-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #1F2937;
-            margin-bottom: 14px;
-        }
-        .actions {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-        }
-        .action-card {
-            background: white;
-            border-radius: 14px;
-            padding: 28px 16px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-        .action-card:hover {
-            border-color: #0087C2;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,135,194,0.15);
-        }
-        .action-card .a-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            background: #FFF3EC;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 14px;
-            font-size: 22px;
-            color: #F97316;
-            transition: all 0.2s;
-        }
-        .action-card:hover .a-icon {
-            background: #0087C2;
-            color: white;
-        }
-        .action-card p {
-            font-size: 13px;
-            font-weight: 700;
-            color: #1F2937;
-        }
+        /* ACTIONS */
+        .section-title { font-size: 15px; font-weight: 700; color: #1F2937; margin-bottom: 14px; }
+        .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 28px; }
+        .action-card { background: white; border-radius: 14px; padding: 28px 16px; text-align: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s; border: 2px solid transparent; }
+        .action-card:hover { border-color: #0087C2; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,135,194,0.15); }
+        .action-card .a-icon { width: 52px; height: 52px; border-radius: 14px; background: #FFF3EC; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 22px; color: #F97316; transition: all 0.2s; }
+        .action-card:hover .a-icon { background: #0087C2; color: white; }
+        .action-card p { font-size: 13px; font-weight: 700; color: #1F2937; }
+
+        /* GRAPHE */
+        .chart-section { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .chart-title { font-size: 15px; font-weight: 700; color: #1F2937; margin-bottom: 18px; }
+
+        /* MODALS */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; overflow-y: auto; padding: 20px 0; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: white; border-radius: 14px; width: 600px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin: auto; }
+        .modal-sm { width: 480px; }
+        .modal-header { background: #0087C2; padding: 14px 20px; border-radius: 14px 14px 0 0; display: flex; align-items: center; justify-content: space-between; }
+        .modal-header-left { display: flex; align-items: center; gap: 10px; }
+        .modal-header-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
+        .modal-header h3 { color: white; font-size: 14px; font-weight: 700; margin: 0; }
+        .modal-header p { color: rgba(255,255,255,0.8); font-size: 11px; margin: 2px 0 0; }
+        .modal-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 700; }
+        .modal-close:hover { background: rgba(255,255,255,0.4); }
+        .modal-body { padding: 16px 20px; }
+        .modal-footer { padding: 12px 20px; border-top: 1px solid #E5E7EB; display: flex; justify-content: flex-end; gap: 10px; border-radius: 0 0 14px 14px; }
+
+        .section-label { font-size: 10px; font-weight: 700; color: #0087C2; text-transform: uppercase; letter-spacing: 1px; margin: 10px 0 7px; padding-bottom: 4px; border-bottom: 1.5px solid #E0F4FF; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 9px; }
+        .form-row.one { grid-template-columns: 1fr; }
+        .form-group { display: flex; flex-direction: column; gap: 3px; }
+        .form-group label { font-size: 10px; font-weight: 700; color: #374151; }
+        .form-group label .req { color: #EF4444; margin-left: 2px; }
+        .form-group input, .form-group select { padding: 9px 12px; border: 1.5px solid #E5E7EB; border-radius: 7px; font-size: 12px; font-family: Arial; color: #1F2937; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #0087C2; }
+        .form-group input::placeholder { color: #9CA3AF; }
+
+        .sexe-btns { display: flex; gap: 6px; }
+        .sexe-btn { flex: 1; padding: 7px; border: 1.5px solid #E5E7EB; border-radius: 7px; background: white; font-size: 12px; font-weight: 700; cursor: pointer; color: #6B7280; }
+        .sexe-btn.selected { background: #0087C2; color: white; border-color: #0087C2; }
+
+        .photo-upload { display: flex; flex-direction: column; align-items: center; margin-bottom: 12px; cursor: pointer; }
+        .photo-circle { width: 65px; height: 65px; border-radius: 50%; border: 2px dashed #0087C2; display: flex; align-items: center; justify-content: center; color: #0087C2; font-size: 22px; margin-bottom: 5px; background: #E0F4FF; overflow: hidden; }
+        .photo-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .photo-upload span { font-size: 11px; color: #6B7280; }
+
+        .btn-annuler { padding: 8px 22px; border: 1.5px solid #E5E7EB; border-radius: 8px; background: white; font-size: 13px; font-weight: 700; cursor: pointer; color: #6B7280; }
+        .btn-annuler:hover { background: #F3F4F6; }
+        .btn-enregistrer { padding: 8px 22px; background: #0087C2; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .btn-enregistrer:hover { background: #006FA3; }
+
+        /* RECAP PAIEMENT */
+        .recap { background: #F0F9FF; border-radius: 10px; padding: 16px 18px; margin-top: 14px; }
+        .recap-title { font-size: 11px; font-weight: 700; color: #0087C2; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .recap-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; color: #374151; }
+        .recap-row span:last-child { font-weight: 700; }
+        .recap-row.reste span:first-child { color: #EF4444; font-weight: 700; }
+        .recap-row.reste span:last-child { color: #EF4444; font-size: 16px; }
     </style>
 </head>
 <body>
+
 {% include 'sidebar.html' %}
-<!-- SIDEBAR -->
 
-<!-- MAIN -->
 <div class="main">
-
-    <!-- TOPBAR -->
     <div class="topbar">
         <h2>Tableau de bord</h2>
         <div class="topbar-right">
@@ -199,24 +115,23 @@
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" placeholder="Rechercher..."/>
             </div>
-            <button class="icon-btn">
-                <i class="fa-solid fa-bell"></i>
-            </button>
-            <button class="icon-btn">
+            <button class="icon-btn"><i class="fa-solid fa-bell"></i></button>
+            <a href="{% url 'login_admin' %}" class="icon-btn deconnexion">
                 <i class="fa-solid fa-right-from-bracket"></i>
-            </button>
+            </a>
         </div>
     </div>
 
-    <!-- CONTENT -->
     <div class="content">
-{% if request.session.admin_id %}
+
+    {% if request.session.admin_id %}
+
         <!-- STATS -->
         <div class="stats">
             <div class="stat-card blue">
                 <div class="stat-info">
                     <span class="stat-label">Total Etudiants</span>
-                    <span class="stat-num">67</span>
+                    <span class="stat-num">{{ total_etudiants }}</span>
                 </div>
                 <div class="stat-icon">
                     <i class="fa-solid fa-user-graduate"></i>
@@ -225,7 +140,7 @@
             <div class="stat-card">
                 <div class="stat-info">
                     <span class="stat-label">Enseignants</span>
-                    <span class="stat-num orange">0</span>
+                    <span class="stat-num orange">{{ total_enseignants }}</span>
                 </div>
                 <div class="stat-icon si-orange">
                     <i class="fa-solid fa-chalkboard-user"></i>
@@ -234,7 +149,7 @@
             <div class="stat-card">
                 <div class="stat-info">
                     <span class="stat-label">Paiements reçus</span>
-                    <span class="stat-num orange">4</span>
+                    <span class="stat-num orange">{{ total_paiements }}</span>
                 </div>
                 <div class="stat-icon si-blue">
                     <i class="fa-solid fa-money-bill-wave"></i>
@@ -243,7 +158,7 @@
             <div class="stat-card">
                 <div class="stat-info">
                     <span class="stat-label">Impayés</span>
-                    <span class="stat-num orange">0</span>
+                    <span class="stat-num orange">{{ impayes }}</span>
                 </div>
                 <div class="stat-icon si-red">
                     <i class="fa-solid fa-triangle-exclamation"></i>
@@ -254,34 +169,321 @@
         <!-- ACTIONS RAPIDES -->
         <p class="section-title">Actions rapides</p>
         <div class="actions">
-            <div class="action-card">
-                <div class="a-icon">
-                    <i class="fa-solid fa-user-plus"></i>
-                </div>
+            <div class="action-card" onclick="document.getElementById('modalEtudiant').classList.add('show')">
+                <div class="a-icon"><i class="fa-solid fa-user-plus"></i></div>
                 <p>Nouvel étudiant</p>
             </div>
-            <div class="action-card">
-                <div class="a-icon">
-                    <i class="fa-solid fa-calendar-plus"></i>
-                </div>
+            <div class="action-card" onclick="document.getElementById('modalCours').classList.add('show')">
+                <div class="a-icon"><i class="fa-solid fa-calendar-plus"></i></div>
                 <p>Planifier cours</p>
             </div>
-            <div class="action-card">
-                <div class="a-icon">
-                    <i class="fa-solid fa-dollar-sign"></i>
-                </div>
+            <div class="action-card" onclick="document.getElementById('modalPaiement').classList.add('show')">
+                <div class="a-icon"><i class="fa-solid fa-dollar-sign"></i></div>
                 <p>Enregistrer paiement</p>
             </div>
             <div class="action-card">
-                <div class="a-icon">
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
+                <div class="a-icon"><i class="fa-solid fa-chart-line"></i></div>
                 <p>Générer rapport</p>
             </div>
         </div>
 
+        <!-- GRAPHE -->
+        <div class="chart-section">
+            <div class="chart-title">📊 Aperçu général</div>
+            <canvas id="dashChart" height="90"></canvas>
+        </div>
+
+    {% endif %}
+
+    {% if request.session.enseignant_id %}
+        <div style="padding:20px;">
+            <h3>Bienvenue, {{ nom }} </h3>
+            <p style="color:#6B7280; margin-top:8px;">Consultez votre emploi du temps et gérez vos évaluations.</p>
+        </div>
+    {% endif %}
+
     </div>
 </div>
-{% endif %}
+
+<!-- ===== MODAL ETUDIANT ===== -->
+<div class="modal-overlay" id="modalEtudiant">
+    <div class="modal">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'etudiants' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-header-icon"><i class="fa-solid fa-user-graduate"></i></div>
+                <div>
+                    <h3>Nouvel Etudiant</h3>
+                    <p>Tous les champs sont obligatoires</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close" onclick="document.getElementById('modalEtudiant').classList.remove('show')">X</button>
+        </div>
+        <div class="modal-body">
+            <div class="photo-upload" onclick="document.getElementById('photoEtudiant').click()">
+                <div class="photo-circle" id="photoPreviewEtudiant">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+                <span>Cliquer pour ajouter une photo</span>
+                <input type="file" id="photoEtudiant" name="photo" accept="image/*" style="display:none" onchange="previewPhoto(this,'photoPreviewEtudiant')"/>
+            </div>
+
+            <div class="section-label">Informations personnelles</div>
+            <div class="form-row">
+                <div class="form-group"><label>NOM <span class="req">*</span></label><input type="text" name="nom" placeholder="Ex: TCHAT" required/></div>
+                <div class="form-group"><label>PRENOM <span class="req">*</span></label><input type="text" name="prenom" placeholder="Ex: Darelle" required/></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>DATE DE NAISSANCE <span class="req">*</span></label><input type="date" name="date_naissance" required/></div>
+                <div class="form-group">
+                    <label>SEXE <span class="req">*</span></label>
+                    <input type="hidden" name="sexe" id="sexe_etudiant" value="M"/>
+                    <div class="sexe-btns">
+                        <button type="button" class="sexe-btn selected" onclick="selectSexe(this,'M','sexe_etudiant')">M</button>
+                        <button type="button" class="sexe-btn" onclick="selectSexe(this,'F','sexe_etudiant')">F</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>ADRESSE <span class="req">*</span></label><input type="text" name="adresse" placeholder="Ex: Akwa, Douala" required/></div>
+                <div class="form-group"><label>TELEPHONE <span class="req">*</span></label><input type="text" name="telephone" placeholder="Ex: 6XX XXX XXX" required/></div>
+            </div>
+            <div class="form-row one">
+                <div class="form-group"><label>EMAIL <span class="req">*</span></label><input type="email" name="email" placeholder="Ex: darelle@email.com" required/></div>
+            </div>
+            <div class="form-row one">
+                <div class="form-group"><label>MOT DE PASSE <span class="req">*</span></label><input type="password" name="password" placeholder="Mot de passe" required/></div>
+            </div>
+
+            <div class="section-label">Formation</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>FILIERE <span class="req">*</span></label>
+                    <select name="filiere" required>
+                        <option value="">Choisir une filière</option>
+                        {% for f in filieres %}
+                        <option value="{{ f.id }}">{{ f.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>FORMATION <span class="req">*</span></label>
+                    <select name="formation">
+                        <option value="">Formation</option>
+                        <option value="CQP">CQP</option>
+                        <option value="DQP">DQP</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-label">Parent / Tuteur</div>
+            <div class="form-row">
+                <div class="form-group"><label>NOM DU PARENT <span class="req">*</span></label><input type="text" name="nom_parent" placeholder="Ex: Tchat Jean" required/></div>
+                <div class="form-group"><label>TELEPHONE PARENT <span class="req">*</span></label><input type="text" name="telephone_parent" placeholder="Ex: 6XX XXX XXX" required/></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-annuler" onclick="document.getElementById('modalEtudiant').classList.remove('show')">Annuler</button>
+            <button type="submit" class="btn-enregistrer">Enregistrer</button>
+        </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL COURS ===== -->
+<div class="modal-overlay" id="modalCours">
+    <div class="modal modal-sm">
+        <form method="POST" action="{% url 'cours' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-header-icon"><i class="fa-solid fa-book"></i></div>
+                <div>
+                    <h3>Nouveau Cours</h3>
+                    <p>Tous les champs sont obligatoires</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close" onclick="document.getElementById('modalCours').classList.remove('show')">X</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row one">
+                <div class="form-group"><label>NOM DU COURS <span class="req">*</span></label><input type="text" name="nom" placeholder="Ex: Mathématiques" required/></div>
+            </div>
+            <div class="form-row one">
+                <div class="form-group">
+                    <label>ENSEIGNANT <span class="req">*</span></label>
+                    <select name="enseignant" required>
+                        <option value="">-- Choisir un enseignant --</option>
+                        {% for e in enseignants %}
+                        <option value="{{ e.id }}">{{ e.nom }} {{ e.prenom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-row one">
+                <div class="form-group">
+                    <label>FILIERE <span class="req">*</span></label>
+                    <select name="filiere" required>
+                        <option value="">-- Choisir une filière --</option>
+                        {% for f in filieres %}
+                        <option value="{{ f.id }}">{{ f.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-annuler" onclick="document.getElementById('modalCours').classList.remove('show')">Annuler</button>
+            <button type="submit" class="btn-enregistrer">Enregistrer</button>
+        </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL PAIEMENT ===== -->
+<div class="modal-overlay" id="modalPaiement">
+    <div class="modal modal-sm">
+        <form method="POST" action="{% url 'paiements' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-header-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+                <div>
+                    <h3>Enregistrer un paiement</h3>
+                    <p>Les champs sont obligatoires</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close" onclick="document.getElementById('modalPaiement').classList.remove('show')">X</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row one">
+                <div class="form-group">
+                    <label>ETUDIANT <span class="req">*</span></label>
+                    <select name="etudiant_id" id="selectEtudiantPaie" required onchange="chargerInfoEtudiant(this)">
+                        <option value="">Sélectionner l'étudiant</option>
+                        {% for e in etudiants %}
+                        <option value="{{ e.id }}"
+                                data-frais="{{ e.filiere.frais_total }}"
+                                data-deja="{% with total=0 %}{% for p in e.paiements.all %}{{ p.montant_verse }}{% endfor %}{% endwith %}">
+                            {{ e.nom }} {{ e.prenom }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>MONTANT VERSE <span class="req">*</span></label><input type="number" name="montant_verse" id="montantVerse2" placeholder="Ex: 75000" oninput="calculerReste2()" required/></div>
+                <div class="form-group"><label>DATE PAIEMENT <span class="req">*</span></label><input type="date" name="date_paiement" required/></div>
+            </div>
+            <input type="hidden" name="frais_total" id="fraisTotal2" value="0"/>
+            <input type="hidden" name="deja_paye" id="dejaPaye2" value="0"/>
+            <div class="recap">
+                <div class="recap-title">Récapitulatif</div>
+                <div class="recap-row"><span>Frais total</span><span id="affFrais2">0 F</span></div>
+                <div class="recap-row"><span>Déjà payé</span><span id="affDeja2">0 F</span></div>
+                <hr style="border:none;border-top:1px solid #E5E7EB;margin:10px 0;"/>
+                <div class="recap-row reste"><span>Reste à payer</span><span id="affReste2">0 F</span></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-annuler" onclick="document.getElementById('modalPaiement').classList.remove('show')">Annuler</button>
+            <button type="submit" class="btn-enregistrer">Enregistrer</button>
+        </div>
+        </form>
+    </div>
+</div>
+
+<script>
+/* SEXE */
+function selectSexe(btn, valeur, inputId) {
+    btn.closest('.sexe-btns').querySelectorAll('.sexe-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById(inputId).value = valeur;
+}
+
+/* PHOTO */
+function previewPhoto(input, previewId) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById(previewId).innerHTML = '<img src="' + e.target.result + '"/>';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+/* PAIEMENT CALCUL */
+function chargerInfoEtudiant(select) {
+    var opt = select.options[select.selectedIndex];
+    var frais = parseFloat(opt.getAttribute('data-frais')) || 0;
+    var deja = parseFloat(opt.getAttribute('data-deja')) || 0;
+    document.getElementById('fraisTotal2').value = frais;
+    document.getElementById('dejaPaye2').value = deja;
+    document.getElementById('affFrais2').textContent = frais.toLocaleString() + ' F';
+    document.getElementById('affDeja2').textContent = deja.toLocaleString() + ' F';
+    calculerReste2();
+}
+function calculerReste2() {
+    var frais = parseFloat(document.getElementById('fraisTotal2').value) || 0;
+    var deja = parseFloat(document.getElementById('dejaPaye2').value) || 0;
+    var montant = parseFloat(document.getElementById('montantVerse2').value) || 0;
+    var reste = frais - deja - montant;
+    document.getElementById('affReste2').textContent = reste.toLocaleString() + ' F';
+    document.getElementById('affReste2').style.color = reste > 0 ? '#EF4444' : '#10B981';
+}
+
+/* FERMER MODALS */
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('show');
+    });
+});
+
+/* CHART */
+const ctx = document.getElementById('dashChart');
+if (ctx) {
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Etudiants', 'Enseignants', 'Paiements', 'Impayés'],
+            datasets: [{
+                label: 'Statistiques',
+                data: [
+                    {{ total_etudiants }},
+                    {{ total_enseignants }},
+                    {{ total_paiements }},
+                    {{ impayes }}
+                ],
+                backgroundColor: ['#0087C2', '#F97316', '#10B981', '#EF4444'],
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ' ' + ctx.parsed.y
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 },
+                    grid: { color: '#F3F4F6' }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+}
+</script>
+
 </body>
 </html>

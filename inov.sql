@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : lun. 13 avr. 2026 à 13:14
+-- Généré le : lun. 27 avr. 2026 à 12:45
 -- Version du serveur : 10.6.25-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -111,7 +111,7 @@ CREATE TABLE `accueil_enseignant` (
 --
 
 INSERT INTO `accueil_enseignant` (`id`, `nom`, `prenom`, `telephone`, `email`, `password`, `date_naissance`, `sexe`, `adresse`, `photo`, `role`) VALUES
-(2, 'NKOUEBO', 'PEGUY', '678563771', 'peguy@gmail.com', '4dd80ecf68c1ab57be427f2ffc97a460c448f4fd2aa8736ab2d6525646a02fd0', '2002-02-23', 'M', 'MAKEPE', '', 'teacher'),
+(2, 'NKOUEBO', 'PEGUY', '678563771', 'peguy@gmail.com', 'fdcbd22964851e47f38d17d2485d573c90ea26fb119dca69fa4d04bf593b646f', '2002-02-23', 'M', 'MAKEPE', '', 'teacher'),
 (3, 'NOULA ', 'PASCAL', '674356789', 'pascal@gmail.com', '4fa931de7524207b065a17acf54bb900dde5f69ee1b9c2c754890ffb0e07a9d8', '1996-06-07', 'M', 'NDOKOTI', '', 'teacher'),
 (4, 'BAYE', 'HERMAN', '673456789', 'herman123@gmail.com', '2808b7b0ddf313bc951d58e3d0f975443fdc9304adec8d454e2bbdf058f9bb3a', '1999-05-03', 'M', 'NDOKOTI', '', 'teacher');
 
@@ -126,16 +126,18 @@ CREATE TABLE `accueil_evaluation` (
   `nom` varchar(100) NOT NULL,
   `coefficient` double NOT NULL,
   `cours_id` bigint(20) NOT NULL,
-  `filiere_id` bigint(20) NOT NULL
+  `filiere_id` bigint(20) NOT NULL,
+  `sequence` varchar(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `accueil_evaluation`
 --
 
-INSERT INTO `accueil_evaluation` (`id`, `nom`, `coefficient`, `cours_id`, `filiere_id`) VALUES
-(1, 'SEQUENCE 1', 1, 5, 6),
-(2, 'Evaluation Maths S1', 6, 4, 6);
+INSERT INTO `accueil_evaluation` (`id`, `nom`, `coefficient`, `cours_id`, `filiere_id`, `sequence`) VALUES
+(1, 'SEQUENCE 1', 1, 5, 6, 'S1'),
+(2, 'Evaluation Maths S1', 6, 4, 6, 'S1'),
+(3, 'COMPTA', 2, 5, 3, 'S1');
 
 -- --------------------------------------------------------
 
@@ -184,8 +186,12 @@ CREATE TABLE `accueil_note` (
 --
 
 INSERT INTO `accueil_note` (`id`, `note`, `etudiant_id`, `evaluation_id`) VALUES
-(1, 12, 4, 1),
-(2, 13, 6, 1);
+(1, 10, 4, 1),
+(2, 13, 6, 1),
+(3, 15, 5, 3),
+(4, 12, 4, 2),
+(5, 13, 6, 2),
+(6, 13, 10, 2);
 
 -- --------------------------------------------------------
 
@@ -242,11 +248,11 @@ CREATE TABLE `accueil_student` (
 
 INSERT INTO `accueil_student` (`id`, `nom`, `prenom`, `date_naissance`, `sexe`, `adresse`, `telephone`, `email`, `password`, `photo`, `role`, `nom_parent`, `telephone_parent`, `date_inscription`, `filiere_id`, `formation`) VALUES
 (4, 'Ebong nguedeu', 'Astride felixe', '2007-07-26', 'F', 'PK12', '656680215', 'astridnguedeu@gmail.com', 'a87b3e348ccb598ecb71bb83300a2bf8d91b780d0717aec6c91fb46ce6fbe3d8', '', 'student', 'mama', '667788909', '2026-04-08 16:17:13.553618', 6, 'CQP'),
-(5, 'ATCHETNGNIA TCHATCHOUA', 'Darelle', '2006-04-10', 'F', 'KOTTO', '673773941', 'tchatchouadarelle@gmail.com', '89ffb7c1ea1c07f35e31c6346dd5307e8e32d3850f5044df22730bead077c2c5', '', 'student', 'TCHATCHOUA BERLIN', '677208547', '2026-04-08 16:21:36.868105', 3, 'CQP'),
+(5, 'ATCHETNGNIA TCHATCHOUA', 'Darelle', '2006-04-10', 'F', 'KOTTO', '673773941', 'tchatchouadarelle@gmail.com', 'fdcbd22964851e47f38d17d2485d573c90ea26fb119dca69fa4d04bf593b646f', '', 'student', 'TCHATCHOUA BERLIN', '677208547', '2026-04-08 16:21:36.868105', 3, 'CQP'),
 (6, 'peyebouo ', 'manuela doriane', '2003-03-11', 'F', 'DEIDO', '671544111', 'peyebouomanuela123@gmail.com', 'a2b2729d5e8f2d69ef437c3f250a516ca28e699dd1a10d30d143a3691d5b0943', '', 'student', 'hjjk', '678900432', '2026-04-08 16:30:55.141542', 6, 'DQP'),
 (7, 'brayan ', 'noula', '2026-04-03', 'M', 'douala', '6772626365', 'brayan@gmail.com', 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f', '', 'student', 'noula', '6546377267', '2026-04-08 16:35:16.095290', 4, 'DQP'),
-(8, 'ulrich', 'styve', '2021-05-23', 'M', 'nyalla pariso', '698033875', 'ulrichsteve@gmail.com', 'd786d5ed44d71b14f87e06362b9c25e170b71a0767c8f55ecab0ecee90c16a36', '', 'student', 'styve jean', '672865985', '2026-04-08 16:40:22.678483', 5, 'CQP'),
-(9, 'nzali ', 'bryan', '2007-01-05', 'M', 'Douala PK 14', '655473150', 'nzalibryan@gmail.com', '352679c3ffea642a98db5219ca62b18037776a5f1e0ba946b352702c24e5b104', '', 'student', 'Mefang Domché', '695914186', '2026-04-08 16:44:39.833671', 11, 'DQP');
+(9, 'nzali ', 'bryan', '2007-01-05', 'M', 'Douala PK 14', '655473150', 'nzalibryan@gmail.com', '352679c3ffea642a98db5219ca62b18037776a5f1e0ba946b352702c24e5b104', '', 'student', 'Mefang Domché', '695914186', '2026-04-08 16:44:39.833671', 11, 'DQP'),
+(10, 'KEUBOU ', 'DINEL', '2026-04-21', 'M', 'DEIDO', '677345678', 'keubou@123.com', '8c7ab4e8f57b4da9da0a00a6fd82c9f836c9365b9029b70703e3b700ebd56fef', '', 'student', 'KEU ', '673456789', '2026-04-20 15:59:02.025554', 6, 'DQP');
 
 -- --------------------------------------------------------
 
@@ -482,7 +488,8 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (18, 'auth', '0012_alter_user_first_name_max_length', '2026-04-08 11:42:03.213561'),
 (19, 'sessions', '0001_initial', '2026-04-08 11:42:03.278804'),
 (20, 'accueil', '0002_student_formation', '2026-04-08 13:55:00.717248'),
-(21, 'accueil', '0003_evaluation_note', '2026-04-10 11:38:09.204621');
+(21, 'accueil', '0003_evaluation_note', '2026-04-10 11:38:09.204621'),
+(22, 'accueil', '0004_evaluation_sequence', '2026-04-13 13:17:36.840483');
 
 -- --------------------------------------------------------
 
@@ -501,7 +508,8 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-('ejfs86b9tutt65ny0c9z2sezh7yhq6w5', '.eJyrVkrNK07NTM9LzCuJz0xRsjLSQRbJy89VslLy8_YPdXXyV0KRKsrPSVWyUipJTUzOSC1SqgUAzw4Z3g:1wAWuY:2MdtL5WZm-yUbL8aygMmAexbxtlg5tX6un4ZWZakxTw', '2026-04-22 17:41:54.678871'),
+('ejfs86b9tutt65ny0c9z2sezh7yhq6w5', '.eJyrVkrNK07NTM9LzCuJz0xRsjLRQRbJy89VslJycox0VUIRL8rPSVWyUipJTUzOSC1SqgUAhgwY7g:1wCGIW:FlbvJglsFDMPfPdTF67NLAekwp4vLiK2Z6EqcJwSCpo', '2026-04-27 12:21:48.416062'),
+('j2jhtg53fc79qsla6ay1dbv02gxm4e1e', '.eJyrVkpMyc3Mi89MUbIy1IFyivJzUpWsIBylWgDWYQvu:1wHJB0:d5AThlZa44T3v2y3Y_VJhcUW6a5ePeiOQMsHZQ2bhmU', '2026-05-11 10:26:54.868523'),
 ('oazqtoag9g2fcmzik0gao4tmo4kaaj6u', '.eJyrVkpMyc3Mi89MUbIy1IFyivJzUpWsIBylWgDWYQvu:1wARPN:_lTA6SvcYDzzuah6KhpTc4PuZGvjfhjDoUeIS8bYRnY', '2026-04-22 11:49:21.692070');
 
 --
@@ -683,7 +691,7 @@ ALTER TABLE `accueil_enseignant`
 -- AUTO_INCREMENT pour la table `accueil_evaluation`
 --
 ALTER TABLE `accueil_evaluation`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `accueil_filiere`
@@ -695,7 +703,7 @@ ALTER TABLE `accueil_filiere`
 -- AUTO_INCREMENT pour la table `accueil_note`
 --
 ALTER TABLE `accueil_note`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pour la table `accueil_paiement`
@@ -707,7 +715,7 @@ ALTER TABLE `accueil_paiement`
 -- AUTO_INCREMENT pour la table `accueil_student`
 --
 ALTER TABLE `accueil_student`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `auth_group`
@@ -761,7 +769,7 @@ ALTER TABLE `django_content_type`
 -- AUTO_INCREMENT pour la table `django_migrations`
 --
 ALTER TABLE `django_migrations`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Contraintes pour les tables déchargées

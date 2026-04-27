@@ -8,7 +8,6 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <style>
-        /* ===== Copie du style de filieres.html ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family: Arial, sans-serif; background: #F3F4F6; display: flex; height: 100vh; overflow: hidden; }
         .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
@@ -26,19 +25,30 @@
         .page-title { font-size: 18px; font-weight: 700; color: #1F2937; margin-bottom: 18px; }
         .msg { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
         .msg.success { background: #D1FAE5; color: #065F46; }
-        .msg.error   { background: #FEE2E2; color: #991B1B; }
+        .msg.error { background: #FEE2E2; color: #991B1B; }
         .tableau-section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .btn-ajouter { width: 36px; height: 36px; background: #0087C2; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
         .btn-ajouter:hover { background: #006FA3; }
+        .dataTables_wrapper .dataTables_length { font-size: 13px; color: #374151; margin-bottom: 10px; }
+        .dataTables_wrapper .dataTables_length select { border: 1.5px solid #E5E7EB; border-radius: 6px; padding: 4px 8px; outline: none; font-size: 13px; margin: 0 4px; }
+        .dataTables_wrapper .dataTables_filter { margin-bottom: 10px; }
+        .dataTables_wrapper .dataTables_filter label { font-size: 13px; color: #374151; font-weight: 600; }
+        .dataTables_wrapper .dataTables_filter input { border: 1.5px solid #E5E7EB; border-radius: 8px; padding: 7px 12px; outline: none; font-size: 13px; margin-left: 8px; width: 200px; }
+        .dataTables_wrapper .dataTables_filter input:focus { border-color: #0087C2; }
+        .dataTables_wrapper .dataTables_info { font-size: 12px; color: #6B7280; margin-top: 12px; }
         table.dataTable { border-collapse: collapse !important; width: 100% !important; margin-top: 8px !important; }
         table.dataTable thead th { background: #F3F4F6; font-size: 12px; font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 11px 14px; border-bottom: 2px solid #E5E7EB !important; }
         table.dataTable tbody td { font-size: 13px; color: #1F2937; padding: 11px 14px; border-bottom: 1px solid #F3F4F6 !important; vertical-align: middle; }
         table.dataTable tbody tr:hover { background: #F0F9FF; }
         .num { font-weight: 700; color: #0087C2; }
-        /* MODAL */
+        .dataTables_wrapper .dataTables_paginate { margin-top: 14px; text-align: right; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button { padding: 5px 10px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: #0087C2 !important; color: white !important; border: none !important; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #E0F4FF !important; color: #0087C2 !important; border: none !important; }
+
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; overflow-y: auto; padding: 20px 0; }
         .modal-overlay.show { display: flex; }
-        .modal { background: white; border-radius: 14px; width: 500px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin: auto; }
+        .modal { background: white; border-radius: 14px; width: 480px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin: auto; }
         .modal-header { background: #0087C2; padding: 14px 20px; border-radius: 14px 14px 0 0; display: flex; align-items: center; justify-content: space-between; }
         .modal-header-left { display: flex; align-items: center; gap: 10px; }
         .modal-header-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
@@ -46,25 +56,25 @@
         .modal-header p { color: rgba(255,255,255,0.8); font-size: 11px; margin: 2px 0 0; }
         .modal-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 700; }
         .modal-close:hover { background: rgba(255,255,255,0.4); }
-        .modal-body { padding: 16px 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
-        .form-group label { font-size: 12px; font-weight: 700; color: #374151; }
-        .form-group input, .form-group select { padding: 7px 10px; border: 1.5px solid #E5E7EB; border-radius: 7px; font-size: 13px; color: #1F2937; outline: none; }
+        .modal-body { padding: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+        .form-group label { font-size: 11px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input, .form-group select { padding: 9px 12px; border: 1.5px solid #E5E7EB; border-radius: 7px; font-size: 13px; color: #1F2937; outline: none; font-family: Arial; }
         .form-group input:focus, .form-group select:focus { border-color: #0087C2; }
-        .modal-footer { padding: 12px 20px; border-top: 1px solid #E5E7EB; display: flex; justify-content: flex-end; gap: 10px; background: white; border-radius: 0 0 14px 14px; }
+        .form-group input::placeholder { color: #9CA3AF; }
+        .modal-footer { padding: 12px 20px; border-top: 1px solid #E5E7EB; display: flex; justify-content: flex-end; gap: 10px; border-radius: 0 0 14px 14px; }
         .btn-annuler { padding: 8px 22px; border: 1.5px solid #E5E7EB; border-radius: 8px; background: white; font-size: 13px; font-weight: 700; cursor: pointer; color: #6B7280; }
         .btn-annuler:hover { background: #F3F4F6; }
         .btn-enregistrer { padding: 8px 22px; background: #0087C2; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
         .btn-enregistrer:hover { background: #006FA3; }
+        .btn-edit { background: orange; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; color: white; }
+        .btn-delete { background: #EF4444; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; color: white; }
     </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-
 {% include 'sidebar.html' %}
 
-<!-- MAIN -->
 <div class="main">
     <div class="topbar">
         <h2>Cours</h2>
@@ -73,6 +83,9 @@
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" placeholder="Rechercher..."/>
             </div>
+            <a href="{% url 'deconnexion_etudiant' %}" class="icon-btn deconnexion" style="text-decoration:none;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
         </div>
     </div>
 
@@ -86,9 +99,10 @@
         {% endif %}
 
         <div class="tableau-section">
-            <button class="btn-ajouter" onclick="document.getElementById('modalCours').classList.add('show')">
+            <button class="btn-ajouter" onclick="ouvrirAjout()">
                 <i class="fa-solid fa-plus"></i>
             </button>
+
             <table id="tableCours" class="display" style="width:100%">
                 <thead>
                     <tr>
@@ -97,100 +111,187 @@
                         <th>Code</th>
                         <th>Enseignant</th>
                         <th>Filière</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for cours in cours_list %}
-                    <tr>
-                        <td class="num">{{ forloop.counter }}</td>
-                        <td>{{ cours.nom }}</td>
-                        <td>{{ cours.code }}</td>
-                        <td>{{ cours.enseignant.nom }} {{ cours.enseignant.prenom }}</td>
-                        <td>{{ cours.filiere.nom }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" style="text-align:center;color:#6B7280;padding:20px;">
-                            Aucun cours ajouté pour le moment
-                        </td>
-                    </tr>
-                    {% endfor %}
+                {% for c in cours_list %}
+                <tr>
+                    <td class="num">{{ forloop.counter }}</td>
+                    <td>{{ c.nom }}</td>
+                    <td>{{ c.code }}</td>
+                    <td>{{ c.enseignant.nom }} {{ c.enseignant.prenom }}</td>
+                    <td>{{ c.filiere.nom }}</td>
+                    <td>
+                        <button class="btn-edit"
+                            onclick="ouvrirModif(
+                                '{{ c.id }}',
+                                '{{ c.nom }}',
+                                '{{ c.enseignant.id }}',
+                                '{{ c.filiere.id }}'
+                            )">✏️</button>
+                        <button class="btn-delete" onclick="supprimerCours('{{ c.id }}')">🗑️</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center;color:#6B7280;padding:20px;">
+                        Aucun cours ajouté pour le moment
+                    </td>
+                </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modalCours">
+<!-- ===== MODAL AJOUT ===== -->
+<div class="modal-overlay" id="modalAjout">
     <div class="modal">
-        <form method="POST">
+        <form method="POST" action="{% url 'cours' %}">
         {% csrf_token %}
+
         <div class="modal-header">
             <div class="modal-header-left">
                 <div class="modal-header-icon"><i class="fa-solid fa-book"></i></div>
                 <div>
                     <h3>Nouveau Cours</h3>
-                    <p>Les champs sont obligatoires</p>
+                    <p>Tous les champs sont obligatoires</p>
                 </div>
             </div>
-            <button type="button" class="modal-close" onclick="document.getElementById('modalCours').classList.remove('show')">X</button>
+            <button type="button" class="modal-close" onclick="fermerAjout()">X</button>
         </div>
 
         <div class="modal-body">
             <div class="form-group">
-                <label>Nom du cours <span class="req">*</span></label>
+                <label>Nom du cours *</label>
                 <input type="text" name="nom" placeholder="Ex: Mathématiques" required/>
             </div>
             <div class="form-group">
-                <label>Enseignant <span class="req">*</span></label>
+                <label>Enseignant *</label>
                 <select name="enseignant" required>
                     <option value="">-- Choisir un enseignant --</option>
-                    {% for enseignant in enseignants %}
-                        <option value="{{ enseignant.id }}">{{ enseignant.nom }} {{ enseignant.prenom }}</option>
+                    {% for e in enseignants %}
+                    <option value="{{ e.id }}">{{ e.nom }} {{ e.prenom }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="form-group">
-                <label>Filière <span class="req">*</span></label>
+                <label>Filière *</label>
                 <select name="filiere" required>
                     <option value="">-- Choisir une filière --</option>
-                    {% for filiere in filieres %}
-                        <option value="{{ filiere.id }}">{{ filiere.nom }}</option>
+                    {% for f in filieres %}
+                    <option value="{{ f.id }}">{{ f.nom }}</option>
                     {% endfor %}
                 </select>
             </div>
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn-annuler" onclick="document.getElementById('modalCours').classList.remove('show')">Annuler</button>
+            <button type="button" class="btn-annuler" onclick="fermerAjout()">Annuler</button>
             <button type="submit" class="btn-enregistrer">Enregistrer</button>
         </div>
+        </form>
+    </div>
+</div>
 
+<!-- ===== MODAL MODIFICATION ===== -->
+<div class="modal-overlay" id="modalModif">
+    <div class="modal">
+        <form method="POST" id="formModif">
+        {% csrf_token %}
+
+        <div class="modal-header">
+            <div class="modal-header-left">
+                <div class="modal-header-icon"><i class="fa-solid fa-pen"></i></div>
+                <div>
+                    <h3>Modifier Cours</h3>
+                    <p>Modifiez les champs souhaités</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close" onclick="fermerModif()">X</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Nom du cours *</label>
+                <input type="text" name="nom" id="m_nom" required/>
+            </div>
+            <div class="form-group">
+                <label>Enseignant *</label>
+                <select name="enseignant" id="m_enseignant" required>
+                    <option value="">-- Choisir un enseignant --</option>
+                    {% for e in enseignants %}
+                    <option value="{{ e.id }}">{{ e.nom }} {{ e.prenom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Filière *</label>
+                <select name="filiere" id="m_filiere" required>
+                    <option value="">-- Choisir une filière --</option>
+                    {% for f in filieres %}
+                    <option value="{{ f.id }}">{{ f.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-annuler" onclick="fermerModif()">Annuler</button>
+            <button type="submit" class="btn-enregistrer">Enregistrer</button>
+        </div>
         </form>
     </div>
 </div>
 
 <script>
-    $(document).ready(function() {
-        $('#tableCours').DataTable({
-            language: {
-                search:      "Rechercher :",
-                lengthMenu:  "Afficher _MENU_ lignes",
-                zeroRecords: "Aucun résultat",
-                emptyTable:  "Aucun cours ajouté",
-                info:        "Page _PAGE_ sur _PAGES_",
-                infoEmpty:   "Aucun résultat",
-                paginate:    { previous: "←", next: "→" }
-            },
-            columnDefs: [{ orderable: false, targets: 0 }],
-            pageLength: 10
-        });
+$(document).ready(function() {
+    $('#tableCours').DataTable({
+        language: {
+            search: "Rechercher :",
+            lengthMenu: "Afficher _MENU_ lignes",
+            zeroRecords: "Aucun résultat",
+            emptyTable: "Aucun cours ajouté",
+            info: "Page _PAGE_ sur _PAGES_",
+            infoEmpty: "Aucun résultat",
+            paginate: { previous: "←", next: "→" }
+        },
+        columnDefs: [{ orderable: false, targets: [0, 5] }],
+        pageLength: 10
     });
+});
 
-    document.getElementById('modalCours').addEventListener('click', function(e) {
+function ouvrirAjout() {
+    document.getElementById('modalAjout').classList.add('show');
+}
+function fermerAjout() {
+    document.getElementById('modalAjout').classList.remove('show');
+}
+
+function ouvrirModif(id, nom, enseignantId, filiereId) {
+    document.getElementById('m_nom').value = nom;
+    document.getElementById('m_enseignant').value = enseignantId;
+    document.getElementById('m_filiere').value = filiereId;
+    document.getElementById('formModif').action = '/edit-cours/' + id + '/';
+    document.getElementById('modalModif').classList.add('show');
+}
+function fermerModif() {
+    document.getElementById('modalModif').classList.remove('show');
+}
+
+function supprimerCours(id) {
+    if (confirm("Voulez-vous vraiment supprimer ce cours ?")) {
+        window.location.href = '/delete-cours/' + id + '/';
+    }
+}
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
         if (e.target === this) this.classList.remove('show');
     });
+});
 </script>
 
 </body>
