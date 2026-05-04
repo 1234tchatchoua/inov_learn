@@ -107,7 +107,7 @@
         {% endif %}
 
         {% if request.session.enseignant_id %}
-        <li><a href="#">
+        <li><a href="{% url 'emploitemps_enseignant' %}">
             <span class="ico"><i class="fa-solid fa-calendar-days"></i></span>
             Emploi de temps
         </a></li>
@@ -117,19 +117,33 @@
             Evaluations
         </a></li>
 
-        <li><a href="#">
+        <li><a href="{% url 'presence_enseignant' %}">
             <span class="ico"><i class="fa-solid fa-hand"></i></span>
             Présence
         </a></li>
         {% endif %}
-
         {% if request.session.etudiant_id %}
-        <li><a href="#">
+        <li><a href="{% url 'mes_cours' %}">
             <span class="ico"><i class="fa-solid fa-book-open"></i></span>
             Mes cours
+       </a></li>
+
+        <li><a href="{% url 'mon_emploi_du_temps' %}">
+            <span class="ico"><i class="fa-solid fa-calendar-days"></i></span>
+            Mon emploi du temps
         </a></li>
 
-        <li><a href="#">
+        <li><a href="{% url 'mes_notes' %}">
+            <span class="ico"><i class="fa-solid fa-clipboard-list"></i></span>
+            Mes notes
+        </a></li>
+
+        <li><a href="{% url 'mes_bulletins' %}">
+            <span class="ico"><i class="fa-solid fa-file-lines"></i></span>
+            Mes bulletins
+        </a></li>
+
+        <li><a href="{% url 'mes_paiements' %}">
             <span class="ico"><i class="fa-solid fa-money-check-dollar"></i></span>
             Mes paiements
         </a></li>

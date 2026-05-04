@@ -1,0 +1,284 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mes Notes - INOV Learn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; background: #F3F4F6; display: flex; height: 100vh; overflow: hidden; }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+        .topbar { background: white; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E5E7EB; position: sticky; top: 0; z-index: 10; }
+        .topbar h2 { font-size: 20px; font-weight: 700; color: #1F2937; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .icon-btn { background: #F3F4F6; border: none; border-radius: 8px; padding: 9px 12px; cursor: pointer; font-size: 15px; color: #6B7280; text-decoration: none; display: inline-flex; align-items: center; }
+        .icon-btn.deconnexion { background: #FEE2E2; color: #EF4444; }
+        .icon-btn.deconnexion:hover { background: #EF4444; color: white; }
+
+        .content { padding: 28px; }
+
+        /* FILIERE HEADER */
+        .filiere-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            background: white;
+            border-radius: 14px;
+            padding: 18px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 5px solid #0087C2;
+        }
+        .filiere-icon { width: 50px; height: 50px; background: #E0F4FF; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #0087C2; }
+        .filiere-info h3 { font-size: 17px; font-weight: 800; color: #1F2937; }
+        .filiere-info p { font-size: 12px; color: #6B7280; margin-top: 3px; }
+
+        /* FILTRE SEQUENCE */
+        .filtre-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+        }
+        .filtre-title { font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .seq-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+        .seq-btn {
+            padding: 10px 22px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            background: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #6B7280;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .seq-btn:hover { border-color: #0087C2; color: #0087C2; background: #E0F4FF; }
+        .seq-btn.active { border-color: #0087C2; background: #0087C2; color: white; }
+
+        /* TABLE */
+        .table-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .table-title { font-size: 15px; font-weight: 700; color: #1F2937; display: flex; align-items: center; gap: 8px; }
+        .seq-badge-active { background: #0087C2; color: white; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: #0F172A; }
+        th { padding: 12px 14px; text-align: left; font-size: 11px; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 12px 14px; border-bottom: 1px solid #F3F4F6; font-size: 13px; color: #1F2937; vertical-align: middle; }
+        tbody tr:nth-child(even) { background: #F8FAFF; }
+        tbody tr:hover { background: #EEF3FF; }
+
+        .note-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 32px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 14px;
+        }
+        .note-tres-bien { background: #D1FAE5; color: #065F46; }
+        .note-bien { background: #DBEAFE; color: #1E40AF; }
+        .note-assez { background: #FEF3C7; color: #92400E; }
+        .note-passable { background: #FFE4CC; color: #9A3412; }
+        .note-mauvais { background: #FEE2E2; color: #991B1B; }
+        .note-absent { background: #F3F4F6; color: #9CA3AF; font-style: italic; font-size: 11px; width: auto; padding: 0 10px; }
+
+        .appreciation {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .app-tb { background: #D1FAE5; color: #065F46; }
+        .app-b { background: #DBEAFE; color: #1E40AF; }
+        .app-ab { background: #FEF3C7; color: #92400E; }
+        .app-p { background: #FFE4CC; color: #9A3412; }
+        .app-i { background: #FEE2E2; color: #991B1B; }
+
+        /* RECAP TOTAL */
+        .recap-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 20px;
+        }
+        .recap-card {
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .rc-blue { background: #EFF6FF; border: 1px solid #BFDBFE; }
+        .rc-green { background: #F0FDF4; border: 1px solid #BBF7D0; }
+        .rc-orange { background: #FFF7ED; border: 1px solid #FED7AA; }
+        .rc-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #6B7280; font-weight: 600; margin-bottom: 6px; }
+        .rc-value { font-size: 24px; font-weight: 800; }
+        .rc-blue .rc-value { color: #1D4ED8; }
+        .rc-green .rc-value { color: #15803D; }
+        .rc-orange .rc-value { color: #C2410C; }
+
+        /* VIDE */
+        .empty { text-align: center; padding: 50px; color: #9CA3AF; }
+        .empty i { font-size: 40px; display: block; margin-bottom: 12px; color: #D1D5DB; }
+    </style>
+</head>
+<body>
+
+{% include 'sidebar.html' %}
+
+<div class="main">
+    <div class="topbar">
+        <h2>Mes Notes</h2>
+        <div class="topbar-right">
+            <button class="icon-btn"><i class="fa-solid fa-bell"></i></button>
+            <a href="{% url 'deconnexion_etudiant' %}" class="icon-btn deconnexion">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- HEADER ETUDIANT -->
+        <div class="filiere-header">
+            <div class="filiere-icon">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="filiere-info">
+                <h3>Notes — {{ etudiant.nom }} {{ etudiant.prenom }}</h3>
+                <p>Filière : {{ etudiant.filiere.nom }} &nbsp;•&nbsp; Formation {{ etudiant.formation }}</p>
+            </div>
+        </div>
+
+        <!-- FILTRE SEQUENCE -->
+        <div class="filtre-card">
+            <div class="filtre-title">
+                <i class="fa-solid fa-filter" style="color:#0087C2;"></i>
+                Choisir une séquence
+            </div>
+            <div class="seq-grid">
+                {% for seq in sequences %}
+                <a href="?sequence={{ seq }}"
+                   class="seq-btn {% if sequence_selectionnee == seq %}active{% endif %}">
+                    {{ seq }}
+                </a>
+                {% empty %}
+                <p style="color:#9CA3AF; font-size:13px;">Aucune séquence disponible pour votre filière.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- TABLEAU DES NOTES -->
+        {% if sequence_selectionnee %}
+        <div class="table-card">
+            <div class="table-header">
+                <div class="table-title">
+                    <i class="fa-solid fa-table" style="color:#0087C2;"></i>
+                    Notes de la séquence
+                </div>
+                <span class="seq-badge-active">{{ sequence_selectionnee }}</span>
+            </div>
+
+            {% if notes_data %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Matière</th>
+                        <th>Coefficient</th>
+                        <th>Note /20</th>
+                        <th>Points</th>
+                        <th>Appréciation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for n in notes_data %}
+                <tr>
+                    <td style="color:#9CA3AF; font-size:11px;">{{ forloop.counter }}</td>
+                    <td><strong>{{ n.matiere }}</strong></td>
+                    <td>{{ n.coef }}</td>
+                    <td>
+                        {% if n.note is not None %}
+                            {% if n.note >= 16 %}
+                            <span class="note-badge note-tres-bien">{{ n.note }}</span>
+                            {% elif n.note >= 14 %}
+                            <span class="note-badge note-bien">{{ n.note }}</span>
+                            {% elif n.note >= 12 %}
+                            <span class="note-badge note-assez">{{ n.note }}</span>
+                            {% elif n.note >= 10 %}
+                            <span class="note-badge note-passable">{{ n.note }}</span>
+                            {% else %}
+                            <span class="note-badge note-mauvais">{{ n.note }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="note-badge note-absent">Absent</span>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ n.points }}</strong></td>
+                    <td>
+                        {% if n.note is not None %}
+                            {% if n.note >= 16 %}<span class="appreciation app-tb">Très Bien</span>
+                            {% elif n.note >= 14 %}<span class="appreciation app-b">Bien</span>
+                            {% elif n.note >= 12 %}<span class="appreciation app-ab">Assez Bien</span>
+                            {% elif n.note >= 10 %}<span class="appreciation app-p">Passable</span>
+                            {% else %}<span class="appreciation app-i">Insuffisant</span>
+                            {% endif %}
+                        {% else %}
+                            <span style="color:#9CA3AF;">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- RECAP -->
+            {% with total_pts=0 total_coef=0 %}
+            <div class="recap-row">
+                <div class="recap-card rc-blue">
+                    <div class="rc-label">Total Points</div>
+                    <div class="rc-value">{{ total_points }}</div>
+                </div>
+                <div class="recap-card rc-green">
+                    <div class="rc-label">Matières évaluées</div>
+                    <div class="rc-value">{{ notes_data|length }}</div>
+                </div>
+                <div class="recap-card rc-orange">
+                    <div class="rc-label">Séquence</div>
+                    <div class="rc-value">{{ sequence_selectionnee }}</div>
+                </div>
+            </div>
+            {% endwith %}
+
+            {% else %}
+            <div class="empty">
+                <i class="fa-solid fa-clipboard"></i>
+                <p>Aucune note disponible pour la séquence {{ sequence_selectionnee }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+</body>
+</html>

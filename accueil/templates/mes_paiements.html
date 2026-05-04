@@ -1,0 +1,259 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mes Paiements - INOV Learn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; background: #F3F4F6; display: flex; height: 100vh; overflow: hidden; }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+        .topbar { background: white; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E5E7EB; position: sticky; top: 0; z-index: 10; }
+        .topbar h2 { font-size: 20px; font-weight: 700; color: #1F2937; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .icon-btn { background: #F3F4F6; border: none; border-radius: 8px; padding: 9px 12px; cursor: pointer; font-size: 15px; color: #6B7280; text-decoration: none; display: inline-flex; align-items: center; }
+        .icon-btn.deconnexion { background: #FEE2E2; color: #EF4444; }
+        .icon-btn.deconnexion:hover { background: #EF4444; color: white; }
+
+        .content { padding: 28px; }
+
+        /* HEADER */
+        .filiere-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            background: white;
+            border-radius: 14px;
+            padding: 18px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 5px solid #0087C2;
+        }
+        .filiere-icon { width: 50px; height: 50px; background: #E0F4FF; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #0087C2; }
+        .filiere-info h3 { font-size: 17px; font-weight: 800; color: #1F2937; }
+        .filiere-info p { font-size: 12px; color: #6B7280; margin-top: 3px; }
+
+        /* STATS */
+        .stats-row { display: flex; gap: 16px; margin-bottom: 24px; }
+        .stat-mini { background: white; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex: 1; }
+        .stat-mini-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .smi-blue { background: #E0F4FF; color: #0087C2; }
+        .smi-green { background: #D1FAE5; color: #10B981; }
+        .smi-red { background: #FEE2E2; color: #EF4444; }
+        .stat-mini-info .val { font-size: 22px; font-weight: 800; color: #1F2937; }
+        .stat-mini-info .lbl { font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* TABLE */
+        .table-card { background: white; border-radius: 14px; padding: 22px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .table-title { font-size: 15px; font-weight: 700; color: #1F2937; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+
+        /* DATATABLES */
+        .dataTables_wrapper .dataTables_length { font-size: 13px; color: #374151; margin-bottom: 10px; }
+        .dataTables_wrapper .dataTables_length select { border: 1.5px solid #E5E7EB; border-radius: 6px; padding: 4px 8px; outline: none; font-size: 13px; margin: 0 4px; }
+        .dataTables_wrapper .dataTables_filter { margin-bottom: 10px; }
+        .dataTables_wrapper .dataTables_filter label { font-size: 13px; color: #374151; font-weight: 600; }
+        .dataTables_wrapper .dataTables_filter input { border: 1.5px solid #E5E7EB; border-radius: 8px; padding: 7px 12px; outline: none; font-size: 13px; margin-left: 8px; width: 200px; }
+        .dataTables_wrapper .dataTables_filter input:focus { border-color: #0087C2; }
+        .dataTables_wrapper .dataTables_info { font-size: 12px; color: #6B7280; margin-top: 12px; }
+        table.dataTable { border-collapse: collapse !important; width: 100% !important; margin-top: 8px !important; }
+        table.dataTable thead th { background: #0F172A; font-size: 11px; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.5px; padding: 12px 14px; border-bottom: none !important; }
+        table.dataTable tbody td { font-size: 13px; color: #1F2937; padding: 14px 14px; border-bottom: 1px solid #F3F4F6 !important; vertical-align: middle; }
+        table.dataTable tbody tr:nth-child(even) { background: #F8FAFF; }
+        table.dataTable tbody tr:hover { background: #EEF3FF; }
+        .dataTables_wrapper .dataTables_paginate { margin-top: 14px; text-align: right; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button { padding: 5px 10px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: #0087C2 !important; color: white !important; border: none !important; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #E0F4FF !important; color: #0087C2 !important; border: none !important; }
+
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-green { background: #D1FAE5; color: #065F46; }
+        .badge-red { background: #FEE2E2; color: #991B1B; }
+
+        .btn-recu {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #0087C2;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-recu:hover { background: #006FA3; }
+
+        .num { font-weight: 700; color: #0087C2; }
+    </style>
+</head>
+<body>
+
+{% include 'sidebar.html' %}
+
+<div class="main">
+    <div class="topbar">
+        <h2>Mes Paiements</h2>
+        <div class="topbar-right">
+            <button class="icon-btn"><i class="fa-solid fa-bell"></i></button>
+            <a href="{% url 'deconnexion_etudiant' %}" class="icon-btn deconnexion">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- HEADER -->
+        <div class="filiere-header">
+            <div class="filiere-icon">
+                <i class="fa-solid fa-money-check-dollar"></i>
+            </div>
+            <div class="filiere-info">
+                <h3>Mes Paiements — {{ etudiant.nom }} {{ etudiant.prenom }}</h3>
+                <p>Filière : {{ etudiant.filiere.nom }} &nbsp;•&nbsp; Formation {{ etudiant.formation }}</p>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stat-mini">
+                <div class="stat-mini-icon smi-blue">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+                <div class="stat-mini-info">
+                    <div class="val">{{ paiements|length }}</div>
+                    <div class="lbl">Total paiements</div>
+                </div>
+            </div>
+            <div class="stat-mini">
+                <div class="stat-mini-icon smi-green">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-mini-info">
+                    <div class="val">
+                        {% if paiements %}
+                            {{ paiements.0.frais_total }} F
+                        {% else %}
+                            0 F
+                        {% endif %}
+                    </div>
+                    <div class="lbl">Frais total filière</div>
+                </div>
+            </div>
+            <div class="stat-mini">
+                <div class="stat-mini-icon smi-red">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="stat-mini-info">
+                    <div class="val">
+                        {% if paiements %}
+                            {{ paiements.last.reste_a_payer }} F
+                        {% else %}
+                            0 F
+                        {% endif %}
+                    </div>
+                    <div class="lbl">Reste à payer</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLEAU -->
+        <div class="table-card">
+            <div class="table-title">
+                <i class="fa-solid fa-list" style="color:#0087C2;"></i>
+                Historique de mes paiements
+            </div>
+
+            <table id="tablePaiements" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Montant versé</th>
+                        <th>Reste à payer</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Reçu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for p in paiements %}
+                <tr>
+                    <td class="num">{{ forloop.counter }}</td>
+                    <td><strong>{{ p.montant_verse }} F</strong></td>
+                    <td>
+                        {% if p.reste_a_payer <= 0 %}
+                            <span style="color:#10B981; font-weight:700;">0 F</span>
+                        {% else %}
+                            <span style="color:#EF4444; font-weight:700;">{{ p.reste_a_payer }} F</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ p.date_paiement|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if p.reste_a_payer <= 0 %}
+                            <span class="badge badge-green">✓ Soldé</span>
+                        {% else %}
+                            <span class="badge badge-red">En cours</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'recu_paiement' p.id %}" class="btn-recu">
+                            <i class="fa-solid fa-receipt"></i> Reçu
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; color:#9CA3AF; padding:30px;">
+                        Aucun paiement enregistré pour le moment.
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#tablePaiements').DataTable({
+        language: {
+            search: "Rechercher :",
+            lengthMenu: "Afficher _MENU_ lignes",
+            zeroRecords: "Aucun résultat",
+            emptyTable: "Aucun paiement enregistré",
+            info: "Page _PAGE_ sur _PAGES_",
+            infoEmpty: "Aucun résultat",
+            paginate: { previous: "←", next: "→" }
+        },
+        columnDefs: [{ orderable: false, targets: [0, 5] }],
+        pageLength: 10,
+        order: [[3, 'asc']]
+    });
+});
+
+// Séparateur de milliers sur tous les montants en F
+
+document.querySelectorAll('td, .val, .rc-value, .recap-row span, strong').forEach(el => {
+    el.innerHTML = el.innerHTML.replace(
+        /(\d+)(\.\d+)?\s*F/g,
+        (match, entier, decimal) => {
+            const num = parseFloat(entier + (decimal || ''));
+            return num.toLocaleString('fr-FR') + ' F';
+        }
+    );
+});
+
+</script>
+
+</body>
+</html>

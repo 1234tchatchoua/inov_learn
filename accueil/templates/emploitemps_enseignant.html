@@ -1,0 +1,311 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emploi du temps - INOV Learn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- FullCalendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; background: #F3F4F6; display: flex; height: 100vh; overflow: hidden; }
+
+        .sidebar { width: 220px; min-width: 220px; background: #0087C2; display: flex; flex-direction: column; align-items: center; padding-top: 20px; height: 100vh; }
+        .sidebar-logo { margin-bottom: 30px; }
+        .sidebar-logo img { width: 90px; }
+        .sidebar-menu { width: 100%; list-style: none; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 12px; padding: 16px 24px; color: rgba(255,255,255,0.85); text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-menu li a:hover { background: rgba(255,255,255,0.15); color: white; }
+        .sidebar-menu li a.active { background: rgba(255,255,255,0.2); color: white; border-left: 4px solid white; }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .topbar { background: white; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E5E7EB; position: sticky; top: 0; z-index: 10; }
+        .topbar h2 { font-size: 20px; font-weight: 700; color: #1F2937; }
+
+        .content { padding: 24px; }
+        .page-title { font-size: 18px; font-weight: 700; color: #1F2937; margin-bottom: 18px; }
+
+        .calendar-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .btn-ajouter {
+            width: 42px;
+            height: 42px;
+            background: #0087C2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .btn-ajouter:hover { background: #006FA3; }
+
+        #calendar {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .fc .fc-toolbar-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+
+        .fc .fc-button {
+            background: #0087C2 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 8px 14px !important;
+        }
+
+        .fc .fc-button:hover {
+            background: #006FA3 !important;
+        }
+
+        .fc-event {
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 2px 4px !important;
+            font-size: 12px;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: 14px;
+            width: 500px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin: auto;
+        }
+
+        .modal-header {
+            background: #0087C2;
+            padding: 14px 20px;
+            border-radius: 14px 14px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .modal-header h3 {
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 11px;
+            margin: 2px 0 0;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .modal-body { padding: 16px 20px; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #1F2937;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #0087C2;
+        }
+
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: white;
+            border-radius: 0 0 14px 14px;
+        }
+
+        .btn-annuler {
+            padding: 8px 22px;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 8px;
+            background: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #6B7280;
+        }
+
+        .btn-enregistrer {
+            padding: 8px 22px;
+            background: #0087C2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .msg.error {
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+{% include 'sidebar.html' %}
+
+<!-- MAIN -->
+<div class="main">
+    <div class="topbar">
+        <h2>Emploi du temps</h2>
+    </div>
+
+    <div class="content">
+        <div class="page-title">Planification hebdomadaire</div>
+
+        {% if erreur %}
+            <div class="msg error">{{ erreur }}</div>
+        {% endif %}
+
+        <div class="calendar-section">
+
+            <div id="calendar"></div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        locale: 'fr',
+        firstDay: 1,
+        slotMinTime: "07:00:00",
+        slotMaxTime: "20:00:00",
+        allDaySlot: false,
+        height: "auto",
+        nowIndicator: true,
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'timeGridWeek,timeGridDay,dayGridMonth'
+        },
+        buttonText: {
+            today: 'Aujourd’hui',
+            month: 'Mois',
+            week: 'Semaine',
+            day: 'Jour'
+        },
+        events: "{% url 'emploienseignant_events' %}",
+
+        eventClick: function(info) {
+            alert(
+                "Cours : " + info.event.title +
+                "\nEnseignant : " + info.event.extendedProps.enseignant +
+                "\nFiliere : " + info.event.extendedProps.filiere
+            );
+        },
+
+        dateClick: function(info) {
+            document.querySelector('input[name="date"]').value = info.dateStr;
+            document.getElementById('modalEmploi').classList.add('show');
+        }
+    });
+
+    calendar.render();
+
+    document.getElementById('modalEmploi').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('show');
+    });
+});
+</script>
+
+</body>
+</html>

@@ -163,4 +163,13 @@ class Note(models.Model):
     def __str__(self):
         return f"{self.etudiant.nom} - {self.note}"
 
+class Presence(models.Model):
+    emploi = models.ForeignKey(EmploiDuTemps, on_delete=models.CASCADE)
+    etudiant = models.ForeignKey(Student, on_delete=models.CASCADE)
 
+    statut = models.CharField(max_length=10)  # "present" ou "absent"
+
+    date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.etudiant} - {self.statut}"

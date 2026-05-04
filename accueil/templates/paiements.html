@@ -335,7 +335,20 @@
     document.getElementById('modalPaiement').addEventListener('click', function(e) {
         if (e.target === this) this.classList.remove('show');
     });
+
+// Séparateur de milliers sur tous les montants en F
+document.querySelectorAll('td, .val, .rc-value, .recap-row span, strong').forEach(el => {
+    el.innerHTML = el.innerHTML.replace(
+        /(\d+)(\.\d+)?\s*F/g,
+        (match, entier, decimal) => {
+            const num = parseFloat(entier + (decimal || ''));
+            return num.toLocaleString('fr-FR') + ' F';
+        }
+    );
+});
+
 </script>
+
 
 </body>
 </html>

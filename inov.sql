@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : lun. 27 avr. 2026 à 12:45
+-- Généré le : lun. 04 mai 2026 à 07:57
 -- Version du serveur : 10.6.25-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -61,7 +61,8 @@ CREATE TABLE `accueil_cours` (
 
 INSERT INTO `accueil_cours` (`id`, `nom`, `code`, `enseignant_id`, `filiere_id`) VALUES
 (4, 'JAVASCRIPT', 'CRS902', 2, 6),
-(5, 'CSS', 'CRS346', 2, 6);
+(5, 'CSS', 'CRS346', 2, 6),
+(6, 'F2', 'CRS781', 4, 4);
 
 -- --------------------------------------------------------
 
@@ -84,7 +85,10 @@ CREATE TABLE `accueil_emploidutemps` (
 --
 
 INSERT INTO `accueil_emploidutemps` (`id`, `date`, `heure_debut`, `heure_fin`, `cours_id`, `enseignant_id`, `filiere_id`) VALUES
-(2, '2026-04-08', '08:30:00.000000', '18:00:00.000000', 4, 2, 6);
+(2, '2026-04-08', '08:30:00.000000', '18:00:00.000000', 4, 2, 6),
+(3, '2026-04-27', '10:00:00.000000', '16:22:00.000000', 4, 3, 6),
+(4, '2026-04-28', '10:47:00.000000', '16:47:00.000000', 5, 4, 4),
+(5, '2026-04-28', '09:55:00.000000', '18:55:00.000000', 6, 4, 4);
 
 -- --------------------------------------------------------
 
@@ -137,7 +141,8 @@ CREATE TABLE `accueil_evaluation` (
 INSERT INTO `accueil_evaluation` (`id`, `nom`, `coefficient`, `cours_id`, `filiere_id`, `sequence`) VALUES
 (1, 'SEQUENCE 1', 1, 5, 6, 'S1'),
 (2, 'Evaluation Maths S1', 6, 4, 6, 'S1'),
-(3, 'COMPTA', 2, 5, 3, 'S1');
+(3, 'COMPTA', 2, 5, 3, 'S1'),
+(4, 'controle continu 2', 6, 4, 6, 'S2');
 
 -- --------------------------------------------------------
 
@@ -191,7 +196,9 @@ INSERT INTO `accueil_note` (`id`, `note`, `etudiant_id`, `evaluation_id`) VALUES
 (3, 15, 5, 3),
 (4, 12, 4, 2),
 (5, 13, 6, 2),
-(6, 13, 10, 2);
+(6, 13, 10, 2),
+(7, 12, 11, 1),
+(8, 10, 11, 2);
 
 -- --------------------------------------------------------
 
@@ -215,7 +222,46 @@ CREATE TABLE `accueil_paiement` (
 --
 
 INSERT INTO `accueil_paiement` (`id`, `montant_verse`, `date_paiement`, `frais_total`, `deja_paye`, `reste_a_payer`, `numero_recu`, `etudiant_id`) VALUES
-(2, 200000.00, '2026-04-08', 350000.00, 0.00, 150000.00, 'RECU-2026-001', 5);
+(2, 200000.00, '2026-04-08', 350000.00, 0.00, 150000.00, 'RECU-2026-001', 5),
+(3, 200000.00, '2026-04-29', 400000.00, 0.00, 200000.00, 'RECU-2026-002', 11);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `accueil_presence`
+--
+
+CREATE TABLE `accueil_presence` (
+  `id` bigint(20) NOT NULL,
+  `statut` varchar(10) NOT NULL,
+  `date` date NOT NULL,
+  `emploi_id` bigint(20) NOT NULL,
+  `etudiant_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `accueil_presence`
+--
+
+INSERT INTO `accueil_presence` (`id`, `statut`, `date`, `emploi_id`, `etudiant_id`) VALUES
+(1, 'present', '2026-04-27', 3, 4),
+(2, 'present', '2026-04-27', 3, 6),
+(3, 'present', '2026-04-27', 3, 10),
+(4, 'absent', '2026-04-27', 3, 11),
+(5, 'present', '2026-04-27', 3, 4),
+(6, 'present', '2026-04-27', 3, 6),
+(7, 'present', '2026-04-27', 3, 10),
+(8, 'present', '2026-04-27', 3, 11),
+(9, 'present', '2026-04-27', 3, 4),
+(10, 'present', '2026-04-27', 3, 6),
+(11, 'present', '2026-04-27', 3, 10),
+(12, 'present', '2026-04-27', 3, 11),
+(13, 'absent', '2026-04-27', 3, 4),
+(14, 'present', '2026-04-27', 3, 6),
+(15, 'present', '2026-04-27', 3, 10),
+(16, 'present', '2026-04-27', 3, 11),
+(17, 'present', '2026-04-28', 4, 7),
+(18, 'present', '2026-04-28', 5, 7);
 
 -- --------------------------------------------------------
 
@@ -252,7 +298,8 @@ INSERT INTO `accueil_student` (`id`, `nom`, `prenom`, `date_naissance`, `sexe`, 
 (6, 'peyebouo ', 'manuela doriane', '2003-03-11', 'F', 'DEIDO', '671544111', 'peyebouomanuela123@gmail.com', 'a2b2729d5e8f2d69ef437c3f250a516ca28e699dd1a10d30d143a3691d5b0943', '', 'student', 'hjjk', '678900432', '2026-04-08 16:30:55.141542', 6, 'DQP'),
 (7, 'brayan ', 'noula', '2026-04-03', 'M', 'douala', '6772626365', 'brayan@gmail.com', 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f', '', 'student', 'noula', '6546377267', '2026-04-08 16:35:16.095290', 4, 'DQP'),
 (9, 'nzali ', 'bryan', '2007-01-05', 'M', 'Douala PK 14', '655473150', 'nzalibryan@gmail.com', '352679c3ffea642a98db5219ca62b18037776a5f1e0ba946b352702c24e5b104', '', 'student', 'Mefang Domché', '695914186', '2026-04-08 16:44:39.833671', 11, 'DQP'),
-(10, 'KEUBOU ', 'DINEL', '2026-04-21', 'M', 'DEIDO', '677345678', 'keubou@123.com', '8c7ab4e8f57b4da9da0a00a6fd82c9f836c9365b9029b70703e3b700ebd56fef', '', 'student', 'KEU ', '673456789', '2026-04-20 15:59:02.025554', 6, 'DQP');
+(10, 'KEUBOU ', 'DINEL', '2026-04-21', 'M', 'DEIDO', '677345678', 'keubou@123.com', '8c7ab4e8f57b4da9da0a00a6fd82c9f836c9365b9029b70703e3b700ebd56fef', '', 'student', 'KEU ', '673456789', '2026-04-20 15:59:02.025554', 6, 'DQP'),
+(11, 'KENFACK', 'FATIN', '2026-03-30', 'M', 'DEIDO', '677204567', 'fatin@gmail.com', 'a4a73786d46c671eceb6fe3ee28851df3b765a2fdc247a82f6795d2e1975c943', '', 'student', 'KENFACK PIERRE', '677204560', '2026-04-27 15:16:49.866966', 6, 'DQP');
 
 -- --------------------------------------------------------
 
@@ -354,7 +401,11 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 (57, 'Can add evaluation', 14, 'add_evaluation'),
 (58, 'Can change evaluation', 14, 'change_evaluation'),
 (59, 'Can delete evaluation', 14, 'delete_evaluation'),
-(60, 'Can view evaluation', 14, 'view_evaluation');
+(60, 'Can view evaluation', 14, 'view_evaluation'),
+(61, 'Can add presence', 16, 'add_presence'),
+(62, 'Can change presence', 16, 'change_presence'),
+(63, 'Can delete presence', 16, 'delete_presence'),
+(64, 'Can view presence', 16, 'view_presence');
 
 -- --------------------------------------------------------
 
@@ -442,6 +493,7 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 (11, 'accueil', 'filiere'),
 (15, 'accueil', 'note'),
 (12, 'accueil', 'paiement'),
+(16, 'accueil', 'presence'),
 (13, 'accueil', 'student'),
 (1, 'admin', 'logentry'),
 (2, 'auth', 'group'),
@@ -489,7 +541,8 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (19, 'sessions', '0001_initial', '2026-04-08 11:42:03.278804'),
 (20, 'accueil', '0002_student_formation', '2026-04-08 13:55:00.717248'),
 (21, 'accueil', '0003_evaluation_note', '2026-04-10 11:38:09.204621'),
-(22, 'accueil', '0004_evaluation_sequence', '2026-04-13 13:17:36.840483');
+(22, 'accueil', '0004_evaluation_sequence', '2026-04-13 13:17:36.840483'),
+(23, 'accueil', '0005_presence', '2026-04-27 16:28:09.894053');
 
 -- --------------------------------------------------------
 
@@ -508,9 +561,15 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
+('5h0k2ivtiafyja44a06r6mbobrebxrbk', '.eJyrVkrNK07NTM9LzCuJz0xRsjLRQRbJy89VslJycox0VUIRL8rPSVWyUipJTUzOSC1SqgUAhgwY7g:1wHi1E:jRAV8JXzt1DS5mh2CKB-7cMf5BTNACIgTCoDDcXEojA', '2026-05-12 12:58:28.294458'),
+('ddswuy8bevnwkza8mgzcbig7b1hs4ic6', '.eJyrVkpMyc3Mi89MUbIy1IFyivJzUpWsIBylWgDWYQvu:1wHhsy:-xZ4O0urCnK3sntnQJjwyfGEUcscKazwtr8hHV2YxYM', '2026-05-12 12:49:56.266609'),
+('dsjagqsu9t7objtsiqg67z661uk11jxm', '.eJyrVkotKU3JTMwric9MUbIyNNRBCOTl5ypZKXm7-rk5OnsruDmGePopIUkX5eekKlkpFZeUpqTmlSjVAgC7WRlB:1wI6gh:yPdqz-lM66_IO70ece7tJfowebM2z_iWFfDoAG2ctPk', '2026-05-13 15:18:55.443098'),
 ('ejfs86b9tutt65ny0c9z2sezh7yhq6w5', '.eJyrVkrNK07NTM9LzCuJz0xRsjLRQRbJy89VslJycox0VUIRL8rPSVWyUipJTUzOSC1SqgUAhgwY7g:1wCGIW:FlbvJglsFDMPfPdTF67NLAekwp4vLiK2Z6EqcJwSCpo', '2026-04-27 12:21:48.416062'),
-('j2jhtg53fc79qsla6ay1dbv02gxm4e1e', '.eJyrVkpMyc3Mi89MUbIy1IFyivJzUpWsIBylWgDWYQvu:1wHJB0:d5AThlZa44T3v2y3Y_VJhcUW6a5ePeiOQMsHZQ2bhmU', '2026-05-11 10:26:54.868523'),
-('oazqtoag9g2fcmzik0gao4tmo4kaaj6u', '.eJyrVkpMyc3Mi89MUbIy1IFyivJzUpWsIBylWgDWYQvu:1wARPN:_lTA6SvcYDzzuah6KhpTc4PuZGvjfhjDoUeIS8bYRnY', '2026-04-22 11:49:21.692070');
+('kqpa86le1z0u2yboiesxa2d2vmh2olwg', '.eJyrVkotKU3JTMwric9MUbIyNNRBCOTl5ypZKXm7-rk5OnsruDmGePopIUkX5eekKlkpFZeUpqTmlSjVAgC7WRlB:1wHhB2:7i_KMmsR0_NMbHgLeWaUGI61YteEa94vt6O7kLDZvc0', '2026-05-12 12:04:32.766073'),
+('oazqtoag9g2fcmzik0gao4tmo4kaaj6u', '.eJyrVkpMyc3Mi89MUbIy1IFyivJzUpWsIBylWgDWYQvu:1wARPN:_lTA6SvcYDzzuah6KhpTc4PuZGvjfhjDoUeIS8bYRnY', '2026-04-22 11:49:21.692070'),
+('ptiq6o8hc2g1gstlpo11kf5sq1wnt0e4', '.eJyrVkrNK07NTM9LzCuJz0xRsjLRQRbJy89VslJycox0VUIRL8rPSVWyUipJTUzOSC1SqgUAhgwY7g:1wHhyg:t8KrfnPkXUfUeVf-sVYZs7qjheZ3XPABYFivRWXaQ2Q', '2026-05-12 12:55:50.666641'),
+('v29h6h5qkswgq1h9e2xpoh8ts1dqnnl4', '.eJyrVkrNK07NTM9LzCuJz0xRsjLRQRbJy89VslJycox0VUIRL8rPSVWyUipJTUzOSC0CyZWUpmTCzDA0RBKAGOHt6ufm6Oyt4OYY4umHrB5qUnFJaUpqXolSLQA6mjFi:1wHi0f:PxClAtW2sI5skuUGkgp2L_jH6ZkMELdO3HjY6nwPYNc', '2026-05-12 12:57:53.960326'),
+('wkfryuyrfftjhqyncadf1ufm6fd77a4o', '.eJyrVkrNK07NTM9LzCuJz0xRsjLRQRbJy89VslJycox0VUIRL8rPSVWyUipJTUzOSC1SqgUAhgwY7g:1wHkQb:ZPVc4cFnstvzD6vQ9hNZMNuac5SS7m2jnrpIqIm9XZI', '2026-05-12 15:32:49.909050');
 
 --
 -- Index pour les tables déchargées
@@ -577,6 +636,14 @@ ALTER TABLE `accueil_paiement`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `numero_recu` (`numero_recu`),
   ADD KEY `accueil_paiement_etudiant_id_7481ab08_fk_accueil_student_id` (`etudiant_id`);
+
+--
+-- Index pour la table `accueil_presence`
+--
+ALTER TABLE `accueil_presence`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `accueil_presence_emploi_id_38cf6f3b_fk_accueil_emploidutemps_id` (`emploi_id`),
+  ADD KEY `accueil_presence_etudiant_id_f1ed477a_fk_accueil_student_id` (`etudiant_id`);
 
 --
 -- Index pour la table `accueil_student`
@@ -673,13 +740,13 @@ ALTER TABLE `accueil_admin`
 -- AUTO_INCREMENT pour la table `accueil_cours`
 --
 ALTER TABLE `accueil_cours`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `accueil_emploidutemps`
 --
 ALTER TABLE `accueil_emploidutemps`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `accueil_enseignant`
@@ -691,7 +758,7 @@ ALTER TABLE `accueil_enseignant`
 -- AUTO_INCREMENT pour la table `accueil_evaluation`
 --
 ALTER TABLE `accueil_evaluation`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `accueil_filiere`
@@ -703,19 +770,25 @@ ALTER TABLE `accueil_filiere`
 -- AUTO_INCREMENT pour la table `accueil_note`
 --
 ALTER TABLE `accueil_note`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT pour la table `accueil_paiement`
 --
 ALTER TABLE `accueil_paiement`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT pour la table `accueil_presence`
+--
+ALTER TABLE `accueil_presence`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT pour la table `accueil_student`
 --
 ALTER TABLE `accueil_student`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT pour la table `auth_group`
@@ -733,7 +806,7 @@ ALTER TABLE `auth_group_permissions`
 -- AUTO_INCREMENT pour la table `auth_permission`
 --
 ALTER TABLE `auth_permission`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT pour la table `auth_user`
@@ -763,13 +836,13 @@ ALTER TABLE `django_admin_log`
 -- AUTO_INCREMENT pour la table `django_content_type`
 --
 ALTER TABLE `django_content_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT pour la table `django_migrations`
 --
 ALTER TABLE `django_migrations`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Contraintes pour les tables déchargées
@@ -809,6 +882,13 @@ ALTER TABLE `accueil_note`
 --
 ALTER TABLE `accueil_paiement`
   ADD CONSTRAINT `accueil_paiement_etudiant_id_7481ab08_fk_accueil_student_id` FOREIGN KEY (`etudiant_id`) REFERENCES `accueil_student` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `accueil_presence`
+--
+ALTER TABLE `accueil_presence`
+  ADD CONSTRAINT `accueil_presence_emploi_id_38cf6f3b_fk_accueil_emploidutemps_id` FOREIGN KEY (`emploi_id`) REFERENCES `accueil_emploidutemps` (`id`),
+  ADD CONSTRAINT `accueil_presence_etudiant_id_f1ed477a_fk_accueil_student_id` FOREIGN KEY (`etudiant_id`) REFERENCES `accueil_student` (`id`);
 
 --
 -- Contraintes pour la table `accueil_student`

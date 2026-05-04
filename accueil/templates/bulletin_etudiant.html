@@ -372,8 +372,27 @@
 
 <!-- BOUTONS HORS PAGE -->
 <div class="action-bar no-print">
-  <a href="/evaluation-teacher/?tab=bulletin&filiere={{ filiere_id }}&evaluation={{ evaluation_id }}" class="btn-back">← Retour</a>
-  <button class="btn-print" onclick="window.print()">🖨️ Imprimer</button>
+
+    {% if request.session.enseignant_id %}
+        <a href="/evaluation-teacher/?tab=bulletin&filiere={{ filiere_id }}&evaluation={{ evaluation_id }}"
+           class="btn-back">
+            ← Retour
+        </a>
+
+    {% elif request.session.etudiant_id %}
+        <a href="{% url 'mes_bulletins' %}" class="btn-back">
+            ← Retour
+        </a>
+
+    {% endif %}
+
+    <!-- CONDITION SUR IMPRIMER -->
+    {% if request.session.enseignant_id %}
+        <button class="btn-print" onclick="window.print()">
+            🖨️ Imprimer
+        </button>
+    {% endif %}
+
 </div>
 
 <!-- PAGE BULLETIN -->

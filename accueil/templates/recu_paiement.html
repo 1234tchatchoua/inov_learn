@@ -1,7 +1,13 @@
 {% load static %}
+{% load humanize %}
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
     <title>Reçu de paiement - INOV Learn</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -184,11 +190,11 @@
                 <div class="recap-box">
                     <div class="recap-line">
                         <span>Frais total de la filière</span>
-                        <span>{{ paiement.frais_total }} F</span>
+                        <span>{{ paiement.frais_total|floatformat:0|intcomma }} F</span>
                     </div>
                     <div class="recap-line montant">
                         <span>Montant versé</span>
-                        <span>{{ paiement.montant_verse }} F</span>
+                        <span>{{ paiement.montant_verse|floatformat:0|intcomma }} F</span>
                     </div>
                     <hr style="border:none;border-top:1px solid #E5E7EB;margin:8px 0;"/>
                     {% if paiement.reste_a_payer <= 0 %}
@@ -199,7 +205,7 @@
                     {% else %}
                     <div class="recap-line reste">
                         <span>Reste à payer</span>
-                        <span>{{ paiement.reste_a_payer }} F</span>
+                        <span>{{ paiement.reste_a_payer|floatformat:0|intcomma }} F</span>
                     </div>
                     {% endif %}
                 </div>
@@ -220,15 +226,38 @@
 
     </div>
 
-    <!-- BOUTONS -->
-    <div class="btns">
-        <button class="btn-imprimer" onclick="window.print()">
-            <i class="fa-solid fa-print"></i> Imprimer / PDF
-        </button>
+   <div class="btns">
+
+    <button class="btn-imprimer" onclick="window.print()">
+        <i class="fa-solid fa-print"></i> Imprimer / PDF
+    </button>
+
+    {% if request.session.admin_id %}
         <a href="{% url 'paiements' %}" class="btn-retour">
-             Retour aux paiements
+            Retour aux paiements
         </a>
-    </div>
+
+    {% elif request.session.etudiant_id %}
+        <a href="{% url 'mes_paiements' %}" class="btn-retour">
+            Retour à mes paiements
+        </a>
+
+    {% endif %}
+
+</div>
+
+<script>
+// Séparateur de milliers sur tous les montants en F
+document.querySelectorAll('td, .val, .rc-value, .recap-row span, strong').forEach(el => {
+    el.innerHTML = el.innerHTML.replace(
+        /(\d+)(\.\d+)?\s*F/g,
+        (match, entier, decimal) => {
+            const num = parseFloat(entier + (decimal || ''));
+            return num.toLocaleString('fr-FR') + ' F';
+        }
+    );
+});
+</script>
 
 </body>
 </html>

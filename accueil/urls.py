@@ -28,6 +28,18 @@ urlpatterns = [
     path('edit-filiere/<int:id>/', views.edit_filiere, name='edit_filiere'),
     path('delete-cours/<int:id>/', views.delete_cours, name='delete_cours'),
     path('edit-cours/<int:id>/', views.edit_cours, name='edit_cours'),
+    path('emploitemps_enseignant/', views.emploitemps_enseignant, name='emploitemps_enseignant'),
+    path('emploienseignant-events/', views.emploienseignant_events, name='emploienseignant_events'),
+    path('presence/', views.presence_enseignant, name='presence_enseignant'),
+    path('etudiants/<int:filiere_id>/',views.get_etudiants_filiere, name='get_etudiants_filiere'),
+    path('save-presence/',views.save_presence,name='save_presence' ),
+    path('presence-data/<int:emploi_id>/',views.presence_data, name='presence_data'),
+    path('mes-cours/', views.mes_cours, name='mes_cours'),
+    path('mon-emploi-du-temps/', views.mon_emploi_du_temps, name='mon_emploi_du_temps'),
+    path('emploi-events-etudiant/', views.emploi_events_etudiant, name='emploi_events_etudiant'),
+    path('mes-notes/', views.mes_notes, name='mes_notes'),
+    path('mes-bulletins/', views.mes_bulletins, name='mes_bulletins'),
+    path('mes-paiements/', views.mes_paiements, name='mes_paiements'),
 
 
 ]

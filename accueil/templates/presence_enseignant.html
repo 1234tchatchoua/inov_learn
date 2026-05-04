@@ -1,0 +1,321 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Présence Enseignant</title>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #f4f6f9;
+            display: flex;
+        }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #0087C2;
+            margin-bottom: 15px;
+        }
+
+        /* TABLE STYLE ÉCOLE */
+        table.dataTable {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .heure-badge {
+            background: #e6f4ff;
+            color: #0087C2;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn {
+            background: #0087C2;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-weight: 600;
+        }
+
+        .btn:hover { background: #006b9c; }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #0087C2;
+        }
+
+        .icon-btn:hover { color: #005b85; }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 550px;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .student-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        select {
+            padding: 5px;
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .save-btn {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background: #0087C2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .save-btn:hover {
+            background: #006b9c;
+        }
+
+        .status-present { color: green; font-weight: bold; }
+        .status-absent { color: red; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+{% include 'sidebar.html' %}
+
+<div class="main">
+
+    <h2>Présence - {{ enseignant.nom }}</h2>
+
+    <!-- TABLE -->
+    <table id="tableEmploi" class="display">
+        <thead>
+            <tr>
+                <th>Cours</th>
+                <th>Filière</th>
+                <th>Heure</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for e in emplois %}
+            <tr>
+                <td>{{ e.cours.nom }}</td>
+
+                <td>
+                    <span style="background:#fff3cd;padding:4px 8px;border-radius:6px;">
+                        {{ e.filiere.nom }}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="heure-badge">
+                        {{ e.heure_debut|time:"H:i" }} - {{ e.heure_fin|time:"H:i" }}
+                    </span>
+                </td>
+
+                <td>
+                    <button class="btn"
+                        onclick="openPresence({{ e.id }}, {{ e.filiere.id }})">
+                        Présence
+                    </button>
+
+                    <button class="icon-btn"
+                        onclick="viewPresence({{ e.id }})">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal" id="modalEdit">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">✖</span>
+        <h3>Marquer présence</h3>
+
+        <div id="editList"></div>
+
+        <button class="save-btn" onclick="savePresence()">
+            Enregistrer
+        </button>
+    </div>
+</div>
+
+<!-- MODAL VIEW -->
+<div class="modal" id="modalView">
+    <div class="modal-content">
+        <span class="close" onclick="closeView()">✖</span>
+        <h3>Présences enregistrées</h3>
+
+        <div id="viewList"></div>
+    </div>
+</div>
+
+<script>
+
+let currentEmploi = null;
+
+/* DATATABLE */
+$(document).ready(function () {
+    $('#tableEmploi').DataTable();
+});
+
+/* OPEN PRESENCE */
+function openPresence(emploiId, filiereId) {
+
+    currentEmploi = emploiId;
+
+    fetch(`/etudiants/${filiereId}/`)
+    .then(res => res.json())
+    .then(data => {
+
+        let html = "";
+
+        data.forEach(e => {
+            html += `
+                <div class="student-row">
+                    <span>${e.nom} ${e.prenom}</span>
+                    <select data-id="${e.id}">
+                        <option value="present">Présent</option>
+                        <option value="absent">Absent</option>
+                    </select>
+                </div>
+            `;
+        });
+
+        document.getElementById("editList").innerHTML = html;
+        document.getElementById("modalEdit").style.display = "flex";
+    });
+}
+
+/* VIEW PRESENCE */
+function viewPresence(emploiId) {
+
+    fetch(`/presence-data/${emploiId}/`)
+    .then(res => res.json())
+    .then(data => {
+
+        let html = "";
+
+        data.forEach(e => {
+
+            let cls = e.statut === "present"
+                ? "status-present"
+                : "status-absent";
+
+            html += `
+                <div class="student-row">
+                    <span>${e.nom}</span>
+                    <span class="${cls}">${e.statut}</span>
+                </div>
+            `;
+        });
+
+        document.getElementById("viewList").innerHTML = html;
+        document.getElementById("modalView").style.display = "flex";
+    });
+}
+
+/* SAVE PRESENCE */
+function savePresence() {
+
+    let data = [];
+
+    document.querySelectorAll("#editList select").forEach(s => {
+        data.push({
+            etudiant_id: s.dataset.id,
+            statut: s.value
+        });
+    });
+
+    fetch("/save-presence/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            emploi_id: currentEmploi,
+            presences: data
+        })
+    }).then(() => {
+        alert("Présence enregistrée !");
+        closeModal();
+    });
+}
+
+/* CLOSE */
+function closeModal() {
+    document.getElementById("modalEdit").style.display = "none";
+}
+
+function closeView() {
+    document.getElementById("modalView").style.display = "none";
+}
+
+/* OUTSIDE CLICK */
+window.onclick = function(e) {
+    if (e.target.classList.contains("modal")) {
+        closeModal();
+        closeView();
+    }
+}
+
+</script>
+
+</body>
+</html>

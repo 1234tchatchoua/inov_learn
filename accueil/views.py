@@ -1,6 +1,6 @@
-
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 from .models import Student
 from .models import Admin
 from .models import Enseignant
@@ -8,25 +8,27 @@ from .models import Filiere
 from .models import Cours
 from .models import Paiement
 from .models import EmploiDuTemps
+from .models import Presence
 import datetime
 from django.http import JsonResponse
 from .models import Evaluation
 from .models import Note
 
-
 import hashlib
+
 
 def accueil(request):
     return render(request, 'accueil.html')
 
+
 def connexion_etudiant(request):
     if request.method == 'POST':
-        email    = request.POST.get('email')
+        email = request.POST.get('email')
         password = request.POST.get('password')
         password_hash = hashlib.sha256(password.encode()).hexdigest()
         try:
             etudiant = Student.objects.get(email=email, password=password_hash)
-            request.session['etudiant_id']  = etudiant.id
+            request.session['etudiant_id'] = etudiant.id
             request.session['etudiant_nom'] = etudiant.nom + ' ' + etudiant.prenom
             request.session['etudiant_role'] = etudiant.role
             return redirect('dashboard_admin')
@@ -37,20 +39,20 @@ def connexion_etudiant(request):
 
 def dashboard_admin(request):
     if not request.session.get('admin_id') \
-       and not request.session.get('etudiant_id') \
-       and not request.session.get('enseignant_id'):
+            and not request.session.get('etudiant_id') \
+            and not request.session.get('enseignant_id'):
         return redirect('login_admin')
 
     nom = (
-        request.session.get('etudiant_nom') or
-        request.session.get('enseignant_nom') or
-        "ADMIN"
+            request.session.get('etudiant_nom') or
+            request.session.get('enseignant_nom') or
+            "ADMIN"
     )
 
     role = (
-        request.session.get('etudiant_role') or
-        request.session.get('enseignant_role') or
-        request.session.get('admin_role')
+            request.session.get('etudiant_role') or
+            request.session.get('enseignant_role') or
+            request.session.get('admin_role')
     )
 
     # 🔥 STATISTIQUES RÉELLES
@@ -78,20 +80,20 @@ def students(request):
     liste_filieres = Filiere.objects.all()
 
     if request.method == 'POST':
-        etudiant_id     = request.POST.get('id')  # 🔥 pour UPDATE
-        nom             = request.POST.get('nom')
-        prenom          = request.POST.get('prenom')
-        date_naissance  = request.POST.get('date_naissance')
-        sexe            = request.POST.get('sexe')
-        adresse         = request.POST.get('adresse')
-        telephone       = request.POST.get('telephone')
-        email           = request.POST.get('email')
-        password        = request.POST.get('password')
-        filiere_id      = request.POST.get('filiere')
-        nom_parent      = request.POST.get('nom_parent')
-        telephone_parent= request.POST.get('telephone_parent')
-        photo           = request.FILES.get('photo')
-        formation       = request.POST.get('formation')
+        etudiant_id = request.POST.get('id')  # 🔥 pour UPDATE
+        nom = request.POST.get('nom')
+        prenom = request.POST.get('prenom')
+        date_naissance = request.POST.get('date_naissance')
+        sexe = request.POST.get('sexe')
+        adresse = request.POST.get('adresse')
+        telephone = request.POST.get('telephone')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        filiere_id = request.POST.get('filiere')
+        nom_parent = request.POST.get('nom_parent')
+        telephone_parent = request.POST.get('telephone_parent')
+        photo = request.FILES.get('photo')
+        formation = request.POST.get('formation')
 
         # 🔴 sécuriser filière
         if not filiere_id:
@@ -168,22 +170,23 @@ def students(request):
         'etudiants': liste_etudiants,
         'filieres': liste_filieres
     })
-    
+
+
 def dashboard_admin(request):
     if not request.session.get('admin_id') \
-       and not request.session.get('etudiant_id') \
-       and not request.session.get('enseignant_id'):
+            and not request.session.get('etudiant_id') \
+            and not request.session.get('enseignant_id'):
         return redirect('login_admin')
 
     nom = (
-        request.session.get('etudiant_nom') or
-        request.session.get('enseignant_nom') or
-        "ADMIN"
+            request.session.get('etudiant_nom') or
+            request.session.get('enseignant_nom') or
+            "ADMIN"
     )
     role = (
-        request.session.get('etudiant_role') or
-        request.session.get('enseignant_role') or
-        request.session.get('admin_role')
+            request.session.get('etudiant_role') or
+            request.session.get('enseignant_role') or
+            request.session.get('admin_role')
     )
 
     total_etudiants = Student.objects.count()
@@ -208,6 +211,8 @@ def dashboard_admin(request):
         'enseignants': enseignants,
         'etudiants': etudiants,
     })
+
+
 def login_admin(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -223,9 +228,11 @@ def login_admin(request):
 
     return render(request, 'login_admin.html')
 
+
 def deconnexion_etudiant(request):
     request.session.flush()
     return redirect('connexion_etudiant')
+
 
 def inscription_admin(request):
     if request.method == 'POST':
@@ -243,6 +250,7 @@ def inscription_admin(request):
         return redirect('login_admin')
 
     return render(request, 'inscription_admin.html')
+
 
 def login_admin(request):
     if request.method == 'POST':
@@ -262,8 +270,8 @@ def login_admin(request):
 
     return render(request, 'login_admin.html')
 
-def enseignants(request):
 
+def enseignants(request):
     if request.method == 'POST':
         nom = request.POST.get('nom')
         prenom = request.POST.get('prenom')
@@ -297,7 +305,7 @@ def enseignants(request):
         return redirect('enseignants')
 
     liste_enseignants = Enseignant.objects.all()
-    return render(request, 'enseignants.html',{'enseignants': liste_enseignants})
+    return render(request, 'enseignants.html', {'enseignants': liste_enseignants})
 
 
 def connexion_enseignant(request):
@@ -312,13 +320,13 @@ def connexion_enseignant(request):
             request.session['enseignant_nom'] = enseignant.nom
             request.session['enseignant_role'] = enseignant.role
 
-
             return redirect('dashboard_admin')
 
         except Enseignant.DoesNotExist:
             messages.error(request, "Identifiants incorrects")
 
     return render(request, 'connexion_enseignant.html')
+
 
 def filieres(request):
     if request.method == 'POST':
@@ -380,31 +388,30 @@ def cours(request):
     })
 
 
-
 def paiements(request):
     if request.method == 'POST':
-        etudiant_id  = request.POST.get('etudiant_id')
-        montant      = request.POST.get('montant_verse')
-        date_paie    = request.POST.get('date_paiement')
-        frais_total  = request.POST.get('frais_total')
-        deja_paye    = request.POST.get('deja_paye')
+        etudiant_id = request.POST.get('etudiant_id')
+        montant = request.POST.get('montant_verse')
+        date_paie = request.POST.get('date_paiement')
+        frais_total = request.POST.get('frais_total')
+        deja_paye = request.POST.get('deja_paye')
 
-        etudiant     = Student.objects.get(id=etudiant_id)
+        etudiant = Student.objects.get(id=etudiant_id)
 
         # Calcul reste à payer
         reste = float(frais_total) - float(deja_paye) - float(montant)
 
         # Numéro reçu automatique
-        numero = f"RECU-{datetime.datetime.now().year}-{str(Paiement.objects.count()+1).zfill(3)}"
+        numero = f"RECU-{datetime.datetime.now().year}-{str(Paiement.objects.count() + 1).zfill(3)}"
 
         paiement = Paiement.objects.create(
-            etudiant       = etudiant,
-            montant_verse  = montant,
-            date_paiement  = date_paie,
-            frais_total    = frais_total,
-            deja_paye      = deja_paye,
-            reste_a_payer  = reste,
-            numero_recu    = numero,
+            etudiant=etudiant,
+            montant_verse=montant,
+            date_paiement=date_paie,
+            frais_total=frais_total,
+            deja_paye=deja_paye,
+            reste_a_payer=reste,
+            numero_recu=numero,
         )
 
         messages.success(request, 'Paiement enregistré avec succès !')
@@ -454,7 +461,7 @@ def emploi_du_temps(request):
 
     cours_list = Cours.objects.all()
     enseignants = Enseignant.objects.all()
-    filieres= Filiere.objects.all()
+    filieres = Filiere.objects.all()
     emplois = EmploiDuTemps.objects.select_related('cours', 'enseignant', 'filiere').all()
 
     return render(request, 'emploi_du_temps.html', {
@@ -466,13 +473,14 @@ def emploi_du_temps(request):
 
     })
 
+
 def emploi_events(request):
-    emplois = EmploiDuTemps.objects.select_related('cours', 'enseignant','filiere').all()
+    emplois = EmploiDuTemps.objects.select_related('cours', 'enseignant', 'filiere').all()
     events = []
 
     for emploi in emplois:
         events.append({
-            'title': f"{emploi.cours.nom} - {emploi.filiere.nom }",
+            'title': f"{emploi.cours.nom} - {emploi.filiere.nom}",
             'start': f"{emploi.date}T{emploi.heure_debut}",
             'end': f"{emploi.date}T{emploi.heure_fin}",
             'extendedProps': {
@@ -589,7 +597,6 @@ def get_evaluations(request):
     return JsonResponse(data, safe=False)
 
 
-
 def bulletin_etudiant(request, etudiant_id):
     etudiant = Student.objects.get(id=etudiant_id)
     evaluation_id = request.GET.get("evaluation")
@@ -659,6 +666,7 @@ def delete_etudiant(request, id):
     messages.success(request, "Étudiant supprimé avec succès")
     return redirect('etudiants')
 
+
 def edit_etudiant(request, id):
     etudiant = Student.objects.get(id=id)
     filieres = Filiere.objects.all()
@@ -694,11 +702,13 @@ def edit_etudiant(request, id):
         'filieres': filieres
     })
 
+
 def delete_enseignant(request, id):
     enseignant = Enseignant.objects.get(id=id)
     enseignant.delete()
     messages.success(request, "Enseignant supprimé avec succès")
     return redirect('enseignants')
+
 
 def edit_enseignant(request, id):
     enseignant = Enseignant.objects.get(id=id)
@@ -745,6 +755,7 @@ def delete_filiere(request, id):
     messages.success(request, "Filière supprimée avec succès")
     return redirect('filieres')
 
+
 def edit_filiere(request, id):
     filiere = Filiere.objects.get(id=id)
     if request.method == "POST":
@@ -766,11 +777,13 @@ def edit_filiere(request, id):
 
     return redirect('filieres')
 
+
 def delete_cours(request, id):
     cours = Cours.objects.get(id=id)
     cours.delete()
     messages.success(request, "Cours supprimé avec succès")
     return redirect('cours')
+
 
 def edit_cours(request, id):
     cours_obj = Cours.objects.get(id=id)
@@ -788,3 +801,268 @@ def edit_cours(request, id):
         return redirect('cours')
 
     return redirect('cours')
+
+
+def emploitemps_enseignant(request):
+    enseignant_id = request.session.get('enseignant_id')
+
+    emplois = EmploiDuTemps.objects.filter(enseignant_id=enseignant_id)
+
+    return render(request, 'emploitemps_enseignant.html', {
+        "emplois": emplois,
+    })
+
+
+from django.http import JsonResponse
+
+
+def emploienseignant_events(request):
+    # 🔥 récupérer l'enseignant connecté
+    enseignant_id = request.session.get('enseignant_id')
+
+    if not enseignant_id:
+        return JsonResponse([], safe=False)
+
+    # 🔥 filtrer uniquement ses emplois
+    emplois = EmploiDuTemps.objects.select_related(
+        'cours', 'enseignant', 'filiere'
+    ).filter(enseignant_id=enseignant_id)
+
+    events = []
+
+    for emploi in emplois:
+        events.append({
+            'title': f"{emploi.cours.nom} - {emploi.filiere.nom}",
+            'start': f"{emploi.date}T{emploi.heure_debut}",
+            'end': f"{emploi.date}T{emploi.heure_fin}",
+            'extendedProps': {
+                'enseignant': f"{emploi.enseignant.nom} {emploi.enseignant.prenom or ''}",
+                'filiere': emploi.filiere.nom
+            }
+        })
+
+    return JsonResponse(events, safe=False)
+
+
+def presence_enseignant(request):
+    enseignant_id = request.session.get('enseignant_id')
+
+    if not enseignant_id:
+        return redirect('connexion_enseignant')
+
+    enseignant = Enseignant.objects.get(id=enseignant_id)
+
+    emplois = EmploiDuTemps.objects.select_related(
+        'cours', 'filiere', 'enseignant'
+    ).filter(enseignant_id=enseignant_id)
+
+    return render(request, 'presence_enseignant.html', {
+        "emplois": emplois,
+        "enseignant": enseignant
+    })
+
+
+def get_etudiants_filiere(request, filiere_id):
+    etudiants = Student.objects.filter(filiere_id=filiere_id)
+
+    data = [
+        {
+            "id": e.id,
+            "nom": e.nom,
+            "prenom": e.prenom
+        }
+        for e in etudiants
+    ]
+
+    return JsonResponse(data, safe=False)
+
+
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+
+@csrf_exempt
+def save_presence(request):
+    data = json.loads(request.body)
+
+    emploi_id = data.get("emploi_id")
+    presences = data.get("presences")
+
+    emploi = EmploiDuTemps.objects.get(id=emploi_id)
+
+    for p in presences:
+        etudiant_id = p["etudiant_id"]
+
+        Presence.objects.update_or_create(
+            emploi=emploi,
+            etudiant_id=etudiant_id,
+            defaults={
+                "statut": p["statut"]
+            }
+        )
+
+    return JsonResponse({"status": "ok"})
+
+
+def presence_data(request, emploi_id):
+    presences = Presence.objects.filter(
+        emploi_id=emploi_id
+    ).select_related('etudiant')
+
+    # dictionnaire pour écraser doublons
+    data_dict = {}
+
+    for p in presences:
+        data_dict[p.etudiant_id] = {
+            "nom": f"{p.etudiant.nom} {p.etudiant.prenom}",
+            "statut": p.statut
+        }
+
+    return JsonResponse(list(data_dict.values()), safe=False)
+
+
+def mes_cours(request):
+    if 'etudiant_id' not in request.session:
+        return redirect('connexion_etudiant')
+
+    etudiant = Student.objects.get(id=request.session['etudiant_id'])
+    cours_list = Cours.objects.filter(
+        filiere=etudiant.filiere
+    ).select_related('enseignant', 'filiere')
+
+    return render(request, 'mes_cours.html', {
+        'etudiant': etudiant,
+        'cours_list': cours_list,
+    })
+
+
+def mon_emploi_du_temps(request):
+    if 'etudiant_id' not in request.session:
+        return redirect('connexion_etudiant')
+
+    etudiant = Student.objects.get(id=request.session['etudiant_id'])
+
+    return render(request, 'mon_emploi_du_temps.html', {
+        'etudiant': etudiant,
+    })
+
+
+def emploi_events_etudiant(request):
+    etudiant_id = request.session.get('etudiant_id')
+    if not etudiant_id:
+        return JsonResponse([], safe=False)
+
+    etudiant = Student.objects.get(id=etudiant_id)
+    emplois = EmploiDuTemps.objects.select_related(
+        'cours', 'enseignant', 'filiere'
+    ).filter(filiere=etudiant.filiere)
+
+    events = []
+    for emploi in emplois:
+        events.append({
+            'title': f"{emploi.cours.nom}",
+            'start': f"{emploi.date}T{emploi.heure_debut}",
+            'end': f"{emploi.date}T{emploi.heure_fin}",
+            'extendedProps': {
+                'enseignant': f"{emploi.enseignant.nom} {emploi.enseignant.prenom or ''}",
+                'filiere': emploi.filiere.nom,
+                'cours': emploi.cours.nom,
+            }
+        })
+
+    return JsonResponse(events, safe=False)
+
+def mes_notes(request):
+    if 'etudiant_id' not in request.session:
+        return redirect('connexion_etudiant')
+
+    etudiant = Student.objects.get(id=request.session['etudiant_id'])
+    sequence = request.GET.get('sequence')
+
+    sequences_dispo = Evaluation.objects.filter(
+        filiere=etudiant.filiere
+    ).values_list('sequence', flat=True).distinct().order_by('sequence')
+
+    notes_data = []
+    total_points = 0
+    total_coef = 0
+
+    if sequence:
+        evaluations = Evaluation.objects.filter(
+            filiere=etudiant.filiere,
+            sequence=sequence
+        ).select_related('cours')
+
+        for eval_ in evaluations:
+            note_obj = Note.objects.filter(
+                etudiant=etudiant,
+                evaluation=eval_
+            ).first()
+            points = round(note_obj.note * eval_.coefficient, 2) if note_obj else 0
+            total_points += points
+            total_coef += eval_.coefficient
+
+            notes_data.append({
+                'matiere': eval_.cours.nom,
+                'coef': eval_.coefficient,
+                'note': note_obj.note if note_obj else None,
+                'points': points,
+            })
+
+    moyenne = round(total_points / total_coef, 2) if total_coef > 0 else 0
+
+    return render(request, 'mes_notes.html', {
+        'etudiant': etudiant,
+        'sequences': sequences_dispo,
+        'sequence_selectionnee': sequence,
+        'notes_data': notes_data,
+        'total_points': total_points,
+        'total_coef': total_coef,
+        'moyenne': moyenne,
+    })
+
+def mes_bulletins(request):
+    if 'etudiant_id' not in request.session:
+        return redirect('connexion_etudiant')
+
+    etudiant = Student.objects.get(id=request.session['etudiant_id'])
+
+    # Récupérer toutes les séquences disponibles pour la filière
+    sequences_dispo = Evaluation.objects.filter(
+        filiere=etudiant.filiere
+    ).values_list('sequence', flat=True).distinct().order_by('sequence')
+
+    bulletins = []
+    for seq in sequences_dispo:
+        # Prendre la première évaluation de cette séquence comme référence
+        eval_ref = Evaluation.objects.filter(
+            filiere=etudiant.filiere,
+            sequence=seq
+        ).first()
+
+        if eval_ref:
+            bulletins.append({
+                'sequence': seq,
+                'eval_id': eval_ref.id,
+            })
+
+    return render(request, 'mes_bulletins.html', {
+        'etudiant': etudiant,
+        'bulletins': bulletins,
+    })
+
+
+def mes_paiements(request):
+    if 'etudiant_id' not in request.session:
+        return redirect('connexion_etudiant')
+
+    etudiant = Student.objects.get(id=request.session['etudiant_id'])
+    paiements = Paiement.objects.filter(
+        etudiant=etudiant
+    ).order_by('date_paiement')
+
+    return render(request, 'mes_paiements.html', {
+        'etudiant': etudiant,
+        'paiements': paiements,
+    })
+
